@@ -1,0 +1,149 @@
+# Ralph Loop Prompt Template
+
+## Template
+
+The generated `/ralph-wiggum:ralph-loop` command should follow this structure:
+
+```
+/ralph-wiggum:ralph-loop "{prompt}" --completion-promise "EP-{XXX} COMPLETE" --max-iterations {N}
+```
+
+## Prompt Structure
+
+The prompt passed to `/ralph-wiggum:ralph-loop` should contain these sections in order:
+
+```
+Implement {feature name} following the spec at {absolute path to SPEC-XXX.md}.
+
+PROGRESS TRACKING:
+- At the START of every iteration, read `progress.txt` at the project root.
+- It contains the list of completed tasks and current state from previous iterations.
+- After completing each task, UPDATE `progress.txt` with:
+  - Which task you just finished (task number + name)
+  - Brief summary of what was done
+  - Any issues encountered
+  - What task comes next
+- This file is your memory across iterations. Keep it accurate.
+
+WORKFLOW:
+1. Read the spec file first.
+2. Read `progress.txt` to see what's already done from previous iterations.
+3. Work through tasks in order, skipping any that are already complete per progress.txt.
+4. Implement each task, then commit.
+5. Update `progress.txt` after each completed task.
+6. After ALL tasks are done, run the best practices checklist (see BEST PRACTICES below).
+
+BEST PRACTICES (after ALL implementation tasks are done):
+1. Run /code-simplifier to reduce unnecessary complexity in the code you wrote.
+2. Create review artefacts:
+   - .artefacts/{feature-slug}/TESTING.md — Manual testing guide with exact steps, expected results, and edge cases.
+   - .artefacts/{feature-slug}/CHANGELOG.md — What changed: summary, files modified, breaking changes.
+3. Run /claude-md-improver and /claude-md-management:revise-claude-md to keep CLAUDE.md current.
+4. Verify all code follows CLAUDE.md and AGENTS.md conventions.
+5. Check for YAGNI violations — no features beyond what the spec describes.
+{codex_review_step}
+
+RULES:
+- Follow the project's CLAUDE.md and AGENTS.md conventions.
+- Do NOT add features beyond what the spec describes.
+- Mark EP-{XXX} status as 'complete' in .prodman/epics/ when done.
+
+CRITICAL — DO NOT COMPLETE EARLY:
+- You have multiple tasks to implement. Do NOT output the completion promise until ALL of them are done.
+- Before outputting <promise>, you MUST verify:
+  1. Every task in the spec is implemented (check them off one by one)
+  2. `progress.txt` shows ALL tasks as complete
+  3. /code-simplifier has been run
+  4. Review artefacts are created in .artefacts/{feature-slug}/
+  5. /claude-md-improver and /claude-md-management:revise-claude-md have been run
+  6. Code follows CLAUDE.md and AGENTS.md conventions
+  7. No YAGNI violations
+  {codex_review_check}
+- If ANY task is incomplete, keep working. You have plenty of iterations.
+
+Output <promise>EP-{XXX} COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
+```
+
+### Codex review insertion
+
+If the user opts in to codex review, insert at `{codex_review_step}`:
+```
+6. Run /codex-review against the spec for an independent second opinion on spec compliance and code quality.
+7. If Codex review finds issues, fix them before completing.
+```
+
+And at `{codex_review_check}`:
+```
+8. Codex review has passed
+```
+
+If the user opts out (default), remove those placeholders entirely.
+
+## Iteration Estimation
+
+Calculate suggested iterations:
+
+| Plan complexity | Tasks | Suggested iterations |
+|----------------|-------|---------------------|
+| Small          | 1-3   | 8-10                |
+| Medium         | 4-7   | 12-18               |
+| Large          | 8-12  | 20-30               |
+| Very large     | 13+   | 30+ (consider splitting into multiple epics) |
+
+Formula: `(number of tasks × 2.5) + 3 buffer`, rounded up to nearest 5.
+
+If the plan has 13+ tasks, suggest splitting into multiple epics with separate ralph loops.
+
+## Example
+
+For a 6-task plan creating EP-002 (without codex review):
+
+```
+/ralph-wiggum:ralph-loop "Implement Quick Start lite space following the spec at /Users/nikitadmitrieff/Projects/coby/mvp-early-bk/coby-v2/.prodman/specs/SPEC-002-quick-start.md.
+
+PROGRESS TRACKING:
+- At the START of every iteration, read progress.txt at the project root.
+- It contains the list of completed tasks and current state from previous iterations.
+- After completing each task, UPDATE progress.txt with:
+  - Which task you just finished (task number + name)
+  - Brief summary of what was done
+  - Any issues encountered
+  - What task comes next
+- This file is your memory across iterations. Keep it accurate.
+
+WORKFLOW:
+1. Read the spec file first.
+2. Read progress.txt to see what is already done from previous iterations.
+3. Work through tasks in order, skipping any that are already complete per progress.txt.
+4. Implement each task, then commit.
+5. Update progress.txt after each completed task.
+6. After ALL tasks are done, run the best practices checklist (see BEST PRACTICES below).
+
+BEST PRACTICES (after ALL implementation tasks are done):
+1. Run /code-simplifier to reduce unnecessary complexity in the code you wrote.
+2. Create review artefacts:
+   - .artefacts/quick-start/TESTING.md — Manual testing guide with exact steps, expected results, and edge cases.
+   - .artefacts/quick-start/CHANGELOG.md — What changed: summary, files modified, breaking changes.
+3. Run /claude-md-improver and /claude-md-management:revise-claude-md to keep CLAUDE.md current.
+4. Verify all code follows CLAUDE.md and AGENTS.md conventions.
+5. Check for YAGNI violations — no features beyond what the spec describes.
+
+RULES:
+- Follow the project's CLAUDE.md and AGENTS.md conventions.
+- Do NOT add features beyond what the spec describes.
+- Mark EP-002 status as complete in .prodman/epics/ when done.
+
+CRITICAL — DO NOT COMPLETE EARLY:
+- You have 6 tasks to implement. Do NOT output the completion promise until ALL of them are done.
+- Before outputting the promise, you MUST verify:
+  1. Every task in the spec is implemented (check them off one by one)
+  2. progress.txt shows ALL tasks as complete
+  3. /code-simplifier has been run
+  4. Review artefacts are created in .artefacts/quick-start/
+  5. /claude-md-improver and /claude-md-management:revise-claude-md have been run
+  6. Code follows CLAUDE.md and AGENTS.md conventions
+  7. No YAGNI violations
+- If ANY task is incomplete, keep working. You have plenty of iterations.
+
+Output <promise>EP-002 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass." --completion-promise "EP-002 COMPLETE" --max-iterations 18
+```
