@@ -1,31 +1,45 @@
 ---
 name: ralph-launch
-description: "Generate a Ralph loop command from a clear feature description — no brainstorming, straight to prodman artifacts and loop generation. Use when the user already knows exactly what they want and just needs the implementation plan + loop command. Triggers on: 'ralph launch', 'just build it', 'skip brainstorm', or when the user provides a detailed feature description ready for implementation."
+description: "Generate a Ralph loop command from a feature description — quick refinement questions, then straight to prodman artifacts and loop generation. Use when the user has a clear idea and just needs the implementation plan + loop command. Triggers on: 'ralph launch', 'just build it', 'skip brainstorm', or when the user provides a feature description ready for implementation."
 ---
 
 # Ralph Launch
 
-Skip brainstorming — go straight from a clear feature description to prodman artifacts and a Ralph loop command.
+Quick refinement, then straight from feature description to prodman artifacts and a Ralph loop command. No full brainstorm — just enough questions to nail the spec.
 
 ## Process Overview
 
 ```
-Phase 1: Context   → Quick codebase scan (no questions asked)
-Phase 2: Artifacts → Create epic + spec
-Phase 3: Launch    → Generate /ralph-wiggum:ralph-loop command
+Phase 1: Context   → Quick codebase scan
+Phase 2: Refine    → 2-4 targeted questions to sharpen the feature
+Phase 3: Artifacts → Create epic + spec
+Phase 4: Launch    → Generate /ralph-wiggum:ralph-loop command
 ```
 
 ## Phase 1: Quick Context Scan
 
-Silently gather context without asking questions. The user already knows what they want.
+Gather context to inform your refinement questions.
 
 - Read `.prodman/roadmap.yaml` and recent epics in `.prodman/epics/` for project state
 - Explore relevant codebase areas based on the user's description
 - Read `CLAUDE.md` and `AGENTS.md` for project conventions
 
-If something is genuinely ambiguous (e.g., conflicting patterns in the codebase, unclear which existing component to extend), ask ONE clarifying question. Otherwise, make reasonable decisions and move on.
+## Phase 2: Refinement Questions
 
-## Phase 2: Prodman Artifacts
+Ask **2-4 targeted questions** using AskUserQuestion to sharpen what the user wants. Focus on things that would materially change the implementation:
+
+- **Scope boundaries** — What's in vs. out? (e.g., "Should this also handle X or just Y?")
+- **Key UX/behavior decisions** — How should it work from the user's perspective? (e.g., "Inline editing or modal?")
+- **Integration points** — Where does this connect to existing features? (e.g., "Should this update the dashboard too?")
+- **Edge cases that affect architecture** — Only if they'd change the technical approach
+
+**Rules:**
+- Keep it to ONE round of questions (no back-and-forth)
+- Don't ask about things you can infer from the codebase or conventions
+- Don't ask about implementation details you can decide yourself
+- If the user's description is already very detailed, you can skip to Phase 3 with a brief confirmation instead
+
+## Phase 3: Prodman Artifacts
 
 Create the epic and spec. Follow the exact same format as ralph-planner — see the shared reference:
 
@@ -43,7 +57,7 @@ Create the epic and spec. Follow the exact same format as ralph-planner — see 
 - For substantial features: include a final task for e2e/functional tests that mirror real user flows
 - For trivial features: no tests needed
 
-## Phase 3: Generate Ralph Loop Command
+## Phase 4: Generate Ralph Loop Command
 
 Generate a `/ralph-wiggum:ralph-loop` command. Follow the exact same template as ralph-planner:
 
@@ -71,7 +85,7 @@ Here's your Ralph loop command (~N iterations estimated for X tasks):
 
 ## Key Principles
 
-- **No questions unless genuinely ambiguous** — The user said what they want, respect that
-- **Speed** — Get to the loop command fast
+- **Refine, don't brainstorm** — Ask 2-4 targeted questions to sharpen scope, then move on. One round only.
+- **Speed** — Get to the loop command fast, the refinement step should take under a minute
 - **Same quality** — Same spec format, same progress tracking, same best-practices checklist as ralph-planner (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md))
 - **YAGNI** — Only plan what was described, no bonus features
