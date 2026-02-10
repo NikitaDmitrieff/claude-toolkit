@@ -10,12 +10,27 @@ A collection of custom skills for [Claude Code](https://docs.anthropic.com/en/do
 | **ralph-planner** | Collaborative brainstorming → prodman artifacts (epic + spec) → Ralph loop command. Full planning flow. |
 | **ralph-launch** | Skip brainstorming — go straight from a feature description to artifacts + Ralph loop command. |
 | **codex-review** | Independent code review using OpenAI Codex MCP as a second opinion. |
+| **publish-toolkit** | Sync local skills to this repo and commit + push. For toolkit maintainers only. |
 | **tdd_cycle** | Enforces Red-Green-Refactor TDD cycle. |
 | **test-and-commit** | Run tests then commit if they pass. |
 | **skill-creator** | Guide for creating new Claude Code skills. |
 | **reddit-fetch** | Fetch Reddit content when WebFetch is blocked. |
 
-## Installation
+## Two Roles
+
+This repo supports two workflows:
+
+### Collaborator (your friend)
+
+Clone → install → get updates via `git pull`.
+
+### Maintainer (you, the skills author)
+
+Edit skills in `~/.claude/skills/` → sync to this repo → commit + push. Collaborators get your changes on their next `git pull`.
+
+---
+
+## Collaborator Setup
 
 ### Prerequisites
 
@@ -56,7 +71,7 @@ A collection of custom skills for [Claude Code](https://docs.anthropic.com/en/do
    /install-plugin context7           # up-to-date library docs
    ```
 
-## Updating
+### Getting Updates
 
 ```bash
 cd /path/to/claude-toolkit
@@ -65,7 +80,7 @@ git pull
 
 That's it. Since skills are symlinked, changes are picked up immediately.
 
-## Uninstalling
+### Uninstalling
 
 Remove the symlinks from `~/.claude/skills/`:
 
@@ -83,9 +98,47 @@ rm ~/.claude/skills/ralph-planner
 # etc.
 ```
 
+---
+
+## Maintainer Workflow
+
+As the toolkit author, you edit skills directly in `~/.claude/skills/` (your source of truth). When you're ready to share changes:
+
+### Option A: Use the `/publish-toolkit` skill (inside Claude Code)
+
+Just say "publish toolkit" or "sync skills" in Claude Code. It will:
+1. Run `sync.sh` to copy your latest skills into this repo
+2. Show you a diff of what changed
+3. Commit and push with your approval
+
+### Option B: Manual sync
+
+```bash
+cd /path/to/claude-toolkit
+
+# Sync existing skills from ~/.claude/skills/ → this repo
+./sync.sh
+
+# Or sync + detect new skills you've created
+./sync.sh --all
+
+# Review, commit, push
+git add .
+git commit -m "update skills"
+git push
+```
+
+### Adding a new skill to the toolkit
+
+1. Create the skill as usual in `~/.claude/skills/my-new-skill/SKILL.md`
+2. Run `./sync.sh --all` — it will detect the new skill and ask to add it
+3. Commit and push
+
+---
+
 ## WSL / Linux Notes
 
-The install script works on both macOS and Linux/WSL. If you're on WSL:
+Both scripts (`install.sh` and `sync.sh`) work on macOS and Linux/WSL. If you're on WSL:
 
 - Make sure Claude Code is installed **inside WSL**, not on the Windows side
 - `~/.claude` should be in your WSL home directory (not `/mnt/c/Users/...`)
@@ -95,7 +148,8 @@ The install script works on both macOS and Linux/WSL. If you're on WSL:
 
 ```
 claude-toolkit/
-├── install.sh                          # Installer script
+├── install.sh                          # For collaborators: symlinks skills into ~/.claude/skills/
+├── sync.sh                             # For maintainers: copies ~/.claude/skills/ → this repo
 ├── README.md                           # This file
 ├── follow-best-practices/
 │   ├── SKILL.md                        # Standalone skill definition
@@ -109,6 +163,8 @@ claude-toolkit/
 ├── ralph-launch/
 │   └── SKILL.md
 ├── codex-review/
+│   └── SKILL.md
+├── publish-toolkit/
 │   └── SKILL.md
 ├── tdd_cycle/
 │   └── SKILL.md
