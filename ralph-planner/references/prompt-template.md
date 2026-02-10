@@ -99,7 +99,7 @@ If the plan has 13+ tasks, suggest splitting into multiple epics with separate r
 For a 6-task plan creating EP-002 (without codex review):
 
 ```
-/ralph-wiggum:ralph-loop "Implement Quick Start lite space following the spec at /Users/nikitadmitrieff/Projects/coby/mvp-early-bk/coby-v2/.prodman/specs/SPEC-002-quick-start.md.
+/ralph-wiggum:ralph-loop "Implement Quick Start lite space following the spec at /Users/XXX/Projects/YYY/.prodman/specs/SPEC-002-quick-start.md.
 
 PROGRESS TRACKING:
 - At the START of every iteration, read progress.txt at the project root.
