@@ -25,13 +25,21 @@ PROGRESS TRACKING:
   - What task comes next
 - This file is your memory across iterations. Keep it accurate.
 
+PACING — ONE TASK PER ITERATION (MANDATORY):
+- Each iteration, implement EXACTLY ONE task from the spec. No more.
+- After completing that single task: commit, update progress.txt, then STOP.
+- Do NOT look ahead to the next task. Do NOT "while I'm here" other tasks.
+- The next iteration will pick up where you left off via progress.txt.
+- Exception: the FINAL iteration handles best practices + completion promise.
+
 WORKFLOW:
 1. Read the spec file first.
 2. Read `progress.txt` to see what's already done from previous iterations.
-3. Work through tasks in order, skipping any that are already complete per progress.txt.
-4. Implement each task, then commit.
-5. Update `progress.txt` after each completed task.
-6. After ALL tasks are done, run the best practices checklist (see BEST PRACTICES below).
+3. Identify the NEXT SINGLE incomplete task (lowest numbered unfinished task).
+4. Implement ONLY that one task, then commit.
+5. Update `progress.txt` with what you just finished and what comes next.
+6. STOP. Do not continue to the next task — let the loop iterate.
+7. Only after ALL tasks show complete in progress.txt, run best practices (see below).
 
 BEST PRACTICES (after ALL implementation tasks are done):
 1. Run /code-simplifier to reduce unnecessary complexity in the code you wrote.
@@ -99,7 +107,7 @@ If the plan has 13+ tasks, suggest splitting into multiple epics with separate r
 For a 6-task plan creating EP-002 (without codex review):
 
 ```
-/ralph-wiggum:ralph-loop "Implement Quick Start lite space following the spec at /Users/XXX/Projects/YYY/.prodman/specs/SPEC-002-quick-start.md.
+/ralph-wiggum:ralph-loop "Implement Quick Start lite space following the spec at /Users/nikitadmitrieff/Projects/coby/mvp-early-bk/coby-v2/.prodman/specs/SPEC-002-quick-start.md.
 
 PROGRESS TRACKING:
 - At the START of every iteration, read progress.txt at the project root.
@@ -111,13 +119,21 @@ PROGRESS TRACKING:
   - What task comes next
 - This file is your memory across iterations. Keep it accurate.
 
+PACING — ONE TASK PER ITERATION (MANDATORY):
+- Each iteration, implement EXACTLY ONE task from the spec. No more.
+- After completing that single task: commit, update progress.txt, then STOP.
+- Do NOT look ahead to the next task. Do NOT while-I'm-here other tasks.
+- The next iteration will pick up where you left off via progress.txt.
+- Exception: the FINAL iteration handles best practices + completion promise.
+
 WORKFLOW:
 1. Read the spec file first.
 2. Read progress.txt to see what is already done from previous iterations.
-3. Work through tasks in order, skipping any that are already complete per progress.txt.
-4. Implement each task, then commit.
-5. Update progress.txt after each completed task.
-6. After ALL tasks are done, run the best practices checklist (see BEST PRACTICES below).
+3. Identify the NEXT SINGLE incomplete task (lowest numbered unfinished task).
+4. Implement ONLY that one task, then commit.
+5. Update progress.txt with what you just finished and what comes next.
+6. STOP. Do not continue to the next task — let the loop iterate.
+7. Only after ALL tasks show complete in progress.txt, run best practices (see below).
 
 BEST PRACTICES (after ALL implementation tasks are done):
 1. Run /code-simplifier to reduce unnecessary complexity in the code you wrote.
