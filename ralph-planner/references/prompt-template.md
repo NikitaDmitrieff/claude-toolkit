@@ -2,19 +2,19 @@
 
 ## Output Format
 
-The skills generate **two files** in the project root:
+The skills generate a prompt file in the artefact folder and a launch command:
 
-### 1. `PROMPT.md` — The prompt fed to Claude each iteration
+### 1. `.artefacts/{slug}/PROMPT.md` — The prompt fed to Claude each iteration
 
 Contains the full task prompt with progress tracking, pacing rules, workflow, best practices, and completion promise.
 
 ### 2. Launch command
 
 ```bash
-~/.claude/scripts/ralph.sh --promise "EP-{XXX} COMPLETE" --max-iterations {N}
+~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-{XXX} COMPLETE" --max-iterations {N}
 ```
 
-Run from the project root. The script reads `PROMPT.md` and pipes it to Claude repeatedly.
+Run from the project root. The script reads `.artefacts/{slug}/PROMPT.md` and pipes it to Claude repeatedly.
 
 ## PROMPT.md Structure
 
@@ -24,9 +24,9 @@ The generated `PROMPT.md` should contain these sections in order:
 Implement {feature name} following the spec at {absolute path to SPEC-XXX.md}.
 
 PROGRESS TRACKING:
-- At the START of every iteration, read `progress.txt` at the project root.
+- At the START of every iteration, read `.artefacts/{slug}/progress.txt`.
 - It contains the list of completed tasks and current state from previous iterations.
-- After completing each task, UPDATE `progress.txt` with:
+- After completing each task, UPDATE `.artefacts/{slug}/progress.txt` with:
   - Which task you just finished (task number + name)
   - Brief summary of what was done
   - Any issues encountered
@@ -35,19 +35,19 @@ PROGRESS TRACKING:
 
 PACING — ONE TASK PER ITERATION (MANDATORY):
 - Each iteration, implement EXACTLY ONE task from the spec. No more.
-- After completing that single task: commit, update progress.txt, then STOP.
+- After completing that single task: commit, update `.artefacts/{slug}/progress.txt`, then STOP.
 - Do NOT look ahead to the next task. Do NOT "while I'm here" other tasks.
-- The next iteration will pick up where you left off via progress.txt.
+- The next iteration will pick up where you left off via `.artefacts/{slug}/progress.txt`.
 - Exception: the FINAL iteration handles best practices + completion promise.
 
 WORKFLOW:
 1. Read the spec file first.
-2. Read `progress.txt` to see what's already done from previous iterations.
+2. Read `.artefacts/{slug}/progress.txt` to see what's already done from previous iterations.
 3. Identify the NEXT SINGLE incomplete task (lowest numbered unfinished task).
 4. Implement ONLY that one task, then commit.
-5. Update `progress.txt` with what you just finished and what comes next.
+5. Update `.artefacts/{slug}/progress.txt` with what you just finished and what comes next.
 6. STOP. Do not continue to the next task — let the loop iterate.
-7. Only after ALL tasks show complete in progress.txt, run best practices (see below).
+7. Only after ALL tasks show complete in `.artefacts/{slug}/progress.txt`, run best practices (see below).
 
 BEST PRACTICES (after ALL implementation tasks are done):
 1. Run /code-simplifier to reduce unnecessary complexity in the code you wrote.
@@ -68,7 +68,7 @@ CRITICAL — DO NOT COMPLETE EARLY:
 - You have multiple tasks to implement. Do NOT output the completion promise until ALL of them are done.
 - Before outputting <promise>, you MUST verify:
   1. Every task in the spec is implemented (check them off one by one)
-  2. `progress.txt` shows ALL tasks as complete
+  2. `.artefacts/{slug}/progress.txt` shows ALL tasks as complete
   3. /code-simplifier has been run
   4. Review artefacts are created in .artefacts/{feature-slug}/
   5. /claude-md-improver and /claude-md-management:revise-claude-md have been run
@@ -114,13 +114,13 @@ If the plan has 13+ tasks, suggest splitting into multiple epics with separate r
 
 For a 6-task plan creating EP-002 (without codex review):
 
-**Generated `PROMPT.md`:**
+**Generated `.artefacts/quick-start/PROMPT.md`:**
 
 ```
 Implement Quick Start lite space following the spec at /Users/nikitadmitrieff/Projects/coby/mvp-early-bk/coby-v2/.prodman/specs/SPEC-002-quick-start.md.
 
 PROGRESS TRACKING:
-- At the START of every iteration, read progress.txt at the project root.
+- At the START of every iteration, read `.artefacts/quick-start/progress.txt`.
 ...
 (full prompt from template above)
 ...
@@ -130,5 +130,5 @@ Output <promise>EP-002 COMPLETE</promise> ONLY when every single task is impleme
 **Launch command:**
 
 ```bash
-~/.claude/scripts/ralph.sh --promise "EP-002 COMPLETE" --max-iterations 18
+~/.claude/scripts/ralph.sh --dir .artefacts/quick-start --promise "EP-002 COMPLETE" --max-iterations 18
 ```

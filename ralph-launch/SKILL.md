@@ -65,8 +65,9 @@ Generate the prompt file and launch command. Follow the exact same template as r
 
 **Steps:**
 
-1. **Create `PROMPT.md`** at the project root with the full prompt
-2. **Generate the launch command** for the user to run in their terminal
+1. **Create `.artefacts/{slug}/`** directory (the artefact folder for this epic)
+2. **Create `.artefacts/{slug}/PROMPT.md`** with the full prompt
+3. **Generate the launch command** with `--dir .artefacts/{slug}` for the user to run in their terminal
 
 **Iteration estimate:** Same formula — `(tasks × 2.5) + 3 buffer`, rounded up to nearest 5.
 
@@ -75,24 +76,24 @@ Generate the prompt file and launch command. Follow the exact same template as r
 **Output format:**
 
 ~~~
-PROMPT.md has been created at the project root.
+.artefacts/{slug}/PROMPT.md has been created.
 
 **What it will do** (~N iterations estimated for X tasks):
 - [1-line summary per major task group]
 
 **To launch**, run this from your terminal:
 ```bash
-cd {absolute project path} && ~/.claude/scripts/ralph.sh --promise "EP-XXX COMPLETE" --max-iterations N
+cd {absolute project path} && ~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-XXX COMPLETE" --max-iterations N
 ```
 
 **To stop:** Ctrl+C
-**To edit the prompt before launching:** Open `PROMPT.md` in your editor.
+**To edit the prompt:** Open `.artefacts/{slug}/PROMPT.md`
 ~~~
 
 ## Key Principles
 
 - **Refine, don't brainstorm** — Ask 2-4 targeted questions to sharpen scope, then move on. One round only.
 - **Speed** — Get to the loop command fast, the refinement step should take under a minute
-- **Same quality** — Same spec format, same progress tracking, same best-practices checklist as ralph-planner (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md))
+- **Same quality** — Same spec format, same artefact-scoped progress tracking, same best-practices checklist as ralph-planner (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md))
 - **Bash loop** — Uses `~/.claude/scripts/ralph.sh` (original Ralph technique), not the broken plugin
 - **YAGNI** — Only plan what was described, no bonus features

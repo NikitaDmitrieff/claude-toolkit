@@ -65,8 +65,9 @@ Generate the prompt file and launch command for the Ralph bash loop.
 
 **Steps:**
 
-1. **Create `PROMPT.md`** at the project root with the full prompt (see [references/prompt-template.md](references/prompt-template.md) for the template)
-2. **Generate the launch command** for the user to copy-paste into their terminal
+1. **Create `.artefacts/{slug}/`** directory (the artefact folder for this epic)
+2. **Create `.artefacts/{slug}/PROMPT.md`** with the full prompt (see [references/prompt-template.md](references/prompt-template.md) for the template)
+3. **Generate the launch command** with `--dir .artefacts/{slug}` for the user to copy-paste into their terminal
 
 **Iteration estimate:**
 - Count the number of tasks in the spec
@@ -81,24 +82,24 @@ Generate the prompt file and launch command for the Ralph bash loop.
 **Output format:**
 
 ~~~
-PROMPT.md has been created at the project root.
+.artefacts/{slug}/PROMPT.md has been created.
 
 **What it will do** (~N iterations estimated for X tasks):
 - [1-line summary per major task group]
 
 **To launch**, run this from your terminal:
 ```bash
-cd {absolute project path} && ~/.claude/scripts/ralph.sh --promise "EP-XXX COMPLETE" --max-iterations N
+cd {absolute project path} && ~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-XXX COMPLETE" --max-iterations N
 ```
 
 **To stop:** Ctrl+C
-**To edit the prompt before launching:** Open `PROMPT.md` in your editor.
+**To edit the prompt:** Open `.artefacts/{slug}/PROMPT.md`
 ~~~
 
 ## Key Principles
 
 - **Plans are specs** — The spec in `.prodman/specs/` is the single source of truth
-- **Progress tracking** — The loop uses `progress.txt` at project root to track completed tasks across iterations
+- **Progress tracking** — The loop uses `.artefacts/{slug}/progress.txt` to track completed tasks across iterations
 - **Anti-premature-completion** — The prompt has explicit guardrails against outputting `<promise>` before ALL tasks are done
 - **Best practices** — The loop runs the shared best-practices checklist (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md)) after implementation: code simplification, artefacts, CLAUDE.md maintenance, convention compliance, YAGNI check, and optional codex review
 - **User launches** — Always write PROMPT.md and output the terminal command, never auto-launch
