@@ -22,9 +22,38 @@ Gather context to inform your refinement questions. Use the same structured appr
 
 ### Step 1: Read project foundations (required)
 
-1. `CLAUDE.md` - Project conventions and architecture overview
-2. `.prodman/roadmap.yaml` - Current product state
-3. `.prodman/config.yaml` - Current epic/spec counters
+**Explore feature domain (strategic):**
+
+Based on the user's feature request, identify the domain:
+- Auth/Users → "auth", "user", "session", "login"
+- Billing/Payments → "payment", "stripe", "subscription", "checkout"
+- Tasks/Content → "{feature-name}", "create", "update", "delete"
+
+Then execute targeted exploration:
+
+```bash
+# Step A: Find relevant files
+Grep pattern="{domain-keywords}" glob="**/*.{ts,js,tsx,jsx}"
+output_mode="files_with_matches"
+
+# Step B: Identify data models
+Grep pattern="{Domain}|{domain}" glob="**/schema.prisma"
+output_mode="content"
+OR
+Grep pattern="model {Domain}" glob="**/models/*.ts"
+output_mode="content"
+
+# Step C: Find existing patterns
+Read the 2-3 most relevant files from Step A to understand:
+- How similar features are structured
+- State management patterns
+- Error handling conventions
+- Testing approaches
+```
+
+**If CLAUDE.md has "Exploration Hints":** Follow them exactly - the user has pre-defined exploration paths.
+
+**If exploration finds > 10 relevant files OR spans multiple apps:** Use Task tool with subagent_type="Explore" and thoroughness="medium" to get a comprehensive summary.
 
 ### Step 2: Explore feature domain (strategic but fast)
 
