@@ -12,7 +12,7 @@ Plan features collaboratively, create prodman artifacts, and generate a tailored
 ```
 Phase 1: Brainstorm → Understand what to build
 Phase 2: Artifacts  → Create epic + spec (the implementation plan)
-Phase 3: Launch     → Generate /ralph-wiggum:ralph-loop command for the user to copy
+Phase 3: Launch     → Generate PROMPT.md + ralph.sh launch command
 ```
 
 ## Phase 1: Brainstorm
@@ -59,9 +59,14 @@ Create the epic and spec. See [references/prodman-templates.md](references/prodm
 - Tests should be comprehensible to a non-developer — they mirror what a user would actually do
 - For trivial features (copy changes, config tweaks, small UI fixes): no tests needed
 
-## Phase 3: Generate Ralph Loop Command
+## Phase 3: Generate PROMPT.md + Launch Command
 
-Generate a `/ralph-wiggum:ralph-loop` command the user can copy-paste.
+Generate the prompt file and launch command for the Ralph bash loop.
+
+**Steps:**
+
+1. **Create `PROMPT.md`** at the project root with the full prompt (see [references/prompt-template.md](references/prompt-template.md) for the template)
+2. **Generate the launch command** for the user to copy-paste into their terminal
 
 **Iteration estimate:**
 - Count the number of tasks in the spec
@@ -71,24 +76,23 @@ Generate a `/ralph-wiggum:ralph-loop` command the user can copy-paste.
 
 **Completion promise:** Always `EP-{XXX} COMPLETE` (standardized format).
 
-**Codex review flag:** Ask the user if they want the codex review gate enabled. If yes, add `WITH CODEX REVIEW` to the prompt. If no (default), skip it.
-
-**Prompt structure:** See [references/prompt-template.md](references/prompt-template.md) for the exact template.
+**Codex review flag:** Ask the user if they want the codex review gate enabled. If yes, add the codex steps to PROMPT.md. If no (default), skip it.
 
 **Output format:**
 
 ~~~
-Here's your Ralph loop command (~N iterations estimated for X tasks):
+PROMPT.md has been created at the project root.
 
-```
-/ralph-wiggum:ralph-loop "..." --completion-promise "EP-XXX COMPLETE" --max-iterations N
-```
-
-**What it will do:**
+**What it will do** (~N iterations estimated for X tasks):
 - [1-line summary per major task group]
 
-**To launch:** Copy the command above and paste it.
-**To cancel mid-loop:** `/ralph-wiggum:cancel-ralph`
+**To launch**, run this from your terminal:
+```bash
+cd {absolute project path} && ~/.claude/scripts/ralph.sh --promise "EP-XXX COMPLETE" --max-iterations N
+```
+
+**To stop:** Ctrl+C
+**To edit the prompt before launching:** Open `PROMPT.md` in your editor.
 ~~~
 
 ## Key Principles
@@ -97,4 +101,5 @@ Here's your Ralph loop command (~N iterations estimated for X tasks):
 - **Progress tracking** — The loop uses `progress.txt` at project root to track completed tasks across iterations
 - **Anti-premature-completion** — The prompt has explicit guardrails against outputting `<promise>` before ALL tasks are done
 - **Best practices** — The loop runs the shared best-practices checklist (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md)) after implementation: code simplification, artefacts, CLAUDE.md maintenance, convention compliance, YAGNI check, and optional codex review
-- **User launches** — Always output the command for copy-paste, never auto-launch
+- **User launches** — Always write PROMPT.md and output the terminal command, never auto-launch
+- **Bash loop** — Uses `~/.claude/scripts/ralph.sh` (original Ralph technique), not the broken plugin

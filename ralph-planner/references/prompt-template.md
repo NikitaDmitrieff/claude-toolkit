@@ -1,16 +1,24 @@
 # Ralph Loop Prompt Template
 
-## Template
+## Output Format
 
-The generated `/ralph-wiggum:ralph-loop` command should follow this structure:
+The skills generate **two files** in the project root:
 
+### 1. `PROMPT.md` — The prompt fed to Claude each iteration
+
+Contains the full task prompt with progress tracking, pacing rules, workflow, best practices, and completion promise.
+
+### 2. Launch command
+
+```bash
+~/.claude/scripts/ralph.sh --promise "EP-{XXX} COMPLETE" --max-iterations {N}
 ```
-/ralph-wiggum:ralph-loop "{prompt}" --completion-promise "EP-{XXX} COMPLETE" --max-iterations {N}
-```
 
-## Prompt Structure
+Run from the project root. The script reads `PROMPT.md` and pipes it to Claude repeatedly.
 
-The prompt passed to `/ralph-wiggum:ralph-loop` should contain these sections in order:
+## PROMPT.md Structure
+
+The generated `PROMPT.md` should contain these sections in order:
 
 ```
 Implement {feature name} following the spec at {absolute path to SPEC-XXX.md}.
@@ -106,60 +114,21 @@ If the plan has 13+ tasks, suggest splitting into multiple epics with separate r
 
 For a 6-task plan creating EP-002 (without codex review):
 
+**Generated `PROMPT.md`:**
+
 ```
-/ralph-wiggum:ralph-loop "Implement Quick Start lite space following the spec at /Users/nikitadmitrieff/Projects/coby/mvp-early-bk/coby-v2/.prodman/specs/SPEC-002-quick-start.md.
+Implement Quick Start lite space following the spec at /Users/nikitadmitrieff/Projects/coby/mvp-early-bk/coby-v2/.prodman/specs/SPEC-002-quick-start.md.
 
 PROGRESS TRACKING:
 - At the START of every iteration, read progress.txt at the project root.
-- It contains the list of completed tasks and current state from previous iterations.
-- After completing each task, UPDATE progress.txt with:
-  - Which task you just finished (task number + name)
-  - Brief summary of what was done
-  - Any issues encountered
-  - What task comes next
-- This file is your memory across iterations. Keep it accurate.
+...
+(full prompt from template above)
+...
+Output <promise>EP-002 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
+```
 
-PACING — ONE TASK PER ITERATION (MANDATORY):
-- Each iteration, implement EXACTLY ONE task from the spec. No more.
-- After completing that single task: commit, update progress.txt, then STOP.
-- Do NOT look ahead to the next task. Do NOT while-I'm-here other tasks.
-- The next iteration will pick up where you left off via progress.txt.
-- Exception: the FINAL iteration handles best practices + completion promise.
+**Launch command:**
 
-WORKFLOW:
-1. Read the spec file first.
-2. Read progress.txt to see what is already done from previous iterations.
-3. Identify the NEXT SINGLE incomplete task (lowest numbered unfinished task).
-4. Implement ONLY that one task, then commit.
-5. Update progress.txt with what you just finished and what comes next.
-6. STOP. Do not continue to the next task — let the loop iterate.
-7. Only after ALL tasks show complete in progress.txt, run best practices (see below).
-
-BEST PRACTICES (after ALL implementation tasks are done):
-1. Run /code-simplifier to reduce unnecessary complexity in the code you wrote.
-2. Create review artefacts:
-   - .artefacts/quick-start/TESTING.md — Manual testing guide with exact steps, expected results, and edge cases.
-   - .artefacts/quick-start/CHANGELOG.md — What changed: summary, files modified, breaking changes.
-3. Run /claude-md-improver and /claude-md-management:revise-claude-md to keep CLAUDE.md current.
-4. Verify all code follows CLAUDE.md and AGENTS.md conventions.
-5. Check for YAGNI violations — no features beyond what the spec describes.
-
-RULES:
-- Follow the project's CLAUDE.md and AGENTS.md conventions.
-- Do NOT add features beyond what the spec describes.
-- Mark EP-002 status as complete in .prodman/epics/ when done.
-
-CRITICAL — DO NOT COMPLETE EARLY:
-- You have 6 tasks to implement. Do NOT output the completion promise until ALL of them are done.
-- Before outputting the promise, you MUST verify:
-  1. Every task in the spec is implemented (check them off one by one)
-  2. progress.txt shows ALL tasks as complete
-  3. /code-simplifier has been run
-  4. Review artefacts are created in .artefacts/quick-start/
-  5. /claude-md-improver and /claude-md-management:revise-claude-md have been run
-  6. Code follows CLAUDE.md and AGENTS.md conventions
-  7. No YAGNI violations
-- If ANY task is incomplete, keep working. You have plenty of iterations.
-
-Output <promise>EP-002 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass." --completion-promise "EP-002 COMPLETE" --max-iterations 18
+```bash
+~/.claude/scripts/ralph.sh --promise "EP-002 COMPLETE" --max-iterations 18
 ```

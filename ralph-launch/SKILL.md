@@ -13,7 +13,7 @@ Quick refinement, then straight from feature description to prodman artifacts an
 Phase 1: Context   → Quick codebase scan
 Phase 2: Refine    → 2-4 targeted questions to sharpen the feature
 Phase 3: Artifacts → Create epic + spec
-Phase 4: Launch    → Generate /ralph-wiggum:ralph-loop command
+Phase 4: Launch    → Generate PROMPT.md + ralph.sh launch command
 ```
 
 ## Phase 1: Quick Context Scan
@@ -57,11 +57,16 @@ Create the epic and spec. Follow the exact same format as ralph-planner — see 
 - For substantial features: include a final task for e2e/functional tests that mirror real user flows
 - For trivial features: no tests needed
 
-## Phase 4: Generate Ralph Loop Command
+## Phase 4: Generate PROMPT.md + Launch Command
 
-Generate a `/ralph-wiggum:ralph-loop` command. Follow the exact same template as ralph-planner:
+Generate the prompt file and launch command. Follow the exact same template as ralph-planner:
 
 **Read [the prompt template](../ralph-planner/references/prompt-template.md) for the exact structure.**
+
+**Steps:**
+
+1. **Create `PROMPT.md`** at the project root with the full prompt
+2. **Generate the launch command** for the user to run in their terminal
 
 **Iteration estimate:** Same formula — `(tasks × 2.5) + 3 buffer`, rounded up to nearest 5.
 
@@ -70,17 +75,18 @@ Generate a `/ralph-wiggum:ralph-loop` command. Follow the exact same template as
 **Output format:**
 
 ~~~
-Here's your Ralph loop command (~N iterations estimated for X tasks):
+PROMPT.md has been created at the project root.
 
-```
-/ralph-wiggum:ralph-loop "..." --completion-promise "EP-XXX COMPLETE" --max-iterations N
-```
-
-**What it will do:**
+**What it will do** (~N iterations estimated for X tasks):
 - [1-line summary per major task group]
 
-**To launch:** Copy the command above and paste it.
-**To cancel mid-loop:** `/ralph-wiggum:cancel-ralph`
+**To launch**, run this from your terminal:
+```bash
+cd {absolute project path} && ~/.claude/scripts/ralph.sh --promise "EP-XXX COMPLETE" --max-iterations N
+```
+
+**To stop:** Ctrl+C
+**To edit the prompt before launching:** Open `PROMPT.md` in your editor.
 ~~~
 
 ## Key Principles
@@ -88,4 +94,5 @@ Here's your Ralph loop command (~N iterations estimated for X tasks):
 - **Refine, don't brainstorm** — Ask 2-4 targeted questions to sharpen scope, then move on. One round only.
 - **Speed** — Get to the loop command fast, the refinement step should take under a minute
 - **Same quality** — Same spec format, same progress tracking, same best-practices checklist as ralph-planner (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md))
+- **Bash loop** — Uses `~/.claude/scripts/ralph.sh` (original Ralph technique), not the broken plugin
 - **YAGNI** — Only plan what was described, no bonus features
