@@ -14,7 +14,6 @@ A collection of custom skills for [Claude Code](https://docs.anthropic.com/en/do
 | **tdd_cycle** | Enforces Red-Green-Refactor TDD cycle. |
 | **test-and-commit** | Run tests then commit if they pass. |
 | **skill-creator** | Guide for creating new Claude Code skills. |
-| **reddit-fetch** | Fetch Reddit content when WebFetch is blocked. |
 
 ## Two Roles
 
