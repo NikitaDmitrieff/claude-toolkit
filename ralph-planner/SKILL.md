@@ -41,10 +41,11 @@ Create the epic and spec. See [references/prodman-templates.md](references/prodm
 
 **Steps:**
 
-1. **Read current counters** from `.prodman/config.yaml`
-2. **Create epic** at `.prodman/epics/EP-{next}-{slug}.yaml`
-3. **Create spec** at `.prodman/specs/SPEC-{next}-{slug}.md` — this IS the implementation plan
-4. **Update counters** in `.prodman/config.yaml` (increment `epic` and `spec`)
+1. **Identify contributor** — determine the contributor's initials (e.g., `ND`, `TB`) from `.prodman/config.yaml`
+2. **Read current counters** from `.prodman/config.yaml` under `contributors.{ID}.counters`
+3. **Create epic** at `.prodman/epics/EP-{ID}-{next}-{slug}.yaml`
+4. **Create spec** at `.prodman/specs/SPEC-{ID}-{next}-{slug}.md` — this IS the implementation plan
+5. **Update counters** in `.prodman/config.yaml` under the contributor's key
 
 **Spec format:** Bite-sized tasks with exact file paths and commit points. See [references/prodman-templates.md](references/prodman-templates.md) for the full template.
 
@@ -75,7 +76,7 @@ Generate the prompt file and launch command for the Ralph bash loop.
 - Add 2-3 buffer iterations for unexpected issues
 - Present: "I estimate ~N iterations based on X tasks. Adjust as needed."
 
-**Completion promise:** Always `EP-{XXX} COMPLETE` (standardized format).
+**Completion promise:** Always `EP-{ID}-{XXX} COMPLETE` (standardized format).
 
 **Codex review flag:** Ask the user if they want the codex review gate enabled. If yes, add the codex steps to PROMPT.md. If no (default), skip it.
 
@@ -89,7 +90,7 @@ Generate the prompt file and launch command for the Ralph bash loop.
 
 **To launch**, run this from your terminal:
 ```bash
-cd {absolute project path} && ~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-XXX COMPLETE" --max-iterations N
+cd {absolute project path} && ~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-{ID}-XXX COMPLETE" --max-iterations N
 ```
 
 **To stop:** Ctrl+C

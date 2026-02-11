@@ -47,10 +47,11 @@ Create the epic and spec. Follow the exact same format as ralph-planner — see 
 
 **Steps:**
 
-1. **Read current counters** from `.prodman/config.yaml`
-2. **Create epic** at `.prodman/epics/EP-{next}-{slug}.yaml`
-3. **Create spec** at `.prodman/specs/SPEC-{next}-{slug}.md`
-4. **Update counters** in `.prodman/config.yaml`
+1. **Identify contributor** — determine the contributor's initials (e.g., `ND`, `TB`) from `.prodman/config.yaml`
+2. **Read current counters** from `.prodman/config.yaml` under `contributors.{ID}.counters`
+3. **Create epic** at `.prodman/epics/EP-{ID}-{next}-{slug}.yaml`
+4. **Create spec** at `.prodman/specs/SPEC-{ID}-{next}-{slug}.md`
+5. **Update counters** in `.prodman/config.yaml` under the contributor's key
 
 **Testing approach:**
 - No per-task tests or TDD
@@ -83,7 +84,7 @@ Generate the prompt file and launch command. Follow the exact same template as r
 
 **To launch**, run this from your terminal:
 ```bash
-cd {absolute project path} && ~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-XXX COMPLETE" --max-iterations N
+cd {absolute project path} && ~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-{ID}-XXX COMPLETE" --max-iterations N
 ```
 
 **To stop:** Ctrl+C

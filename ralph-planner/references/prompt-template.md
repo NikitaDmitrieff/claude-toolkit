@@ -11,7 +11,7 @@ Contains the full task prompt with progress tracking, pacing rules, workflow, be
 ### 2. Launch command
 
 ```bash
-~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-{XXX} COMPLETE" --max-iterations {N}
+~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-{ID}-{XXX} COMPLETE" --max-iterations {N}
 ```
 
 Run from the project root. The script reads `.artefacts/{slug}/PROMPT.md` and pipes it to Claude repeatedly.
@@ -62,7 +62,7 @@ BEST PRACTICES (after ALL implementation tasks are done):
 RULES:
 - Follow the project's CLAUDE.md and AGENTS.md conventions.
 - Do NOT add features beyond what the spec describes.
-- Mark EP-{XXX} status as 'complete' in .prodman/epics/ when done.
+- Mark EP-{ID}-{XXX} status as 'complete' in .prodman/epics/ when done.
 
 CRITICAL — DO NOT COMPLETE EARLY:
 - You have multiple tasks to implement. Do NOT output the completion promise until ALL of them are done.
@@ -77,7 +77,7 @@ CRITICAL — DO NOT COMPLETE EARLY:
   {codex_review_check}
 - If ANY task is incomplete, keep working. You have plenty of iterations.
 
-Output <promise>EP-{XXX} COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
+Output <promise>EP-{ID}-{XXX} COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
 ```
 
 ### Codex review insertion
@@ -112,7 +112,7 @@ If the plan has 13+ tasks, suggest splitting into multiple epics with separate r
 
 ## Example
 
-For a 6-task plan creating EP-002 (without codex review):
+For a 6-task plan creating EP-ND-002 (without codex review):
 
 **Generated `.artefacts/quick-start/PROMPT.md`:**
 
@@ -124,11 +124,11 @@ PROGRESS TRACKING:
 ...
 (full prompt from template above)
 ...
-Output <promise>EP-002 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
+Output <promise>EP-ND-002 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
 ```
 
 **Launch command:**
 
 ```bash
-~/.claude/scripts/ralph.sh --dir .artefacts/quick-start --promise "EP-002 COMPLETE" --max-iterations 18
+~/.claude/scripts/ralph.sh --dir .artefacts/quick-start --promise "EP-ND-002 COMPLETE" --max-iterations 18
 ```

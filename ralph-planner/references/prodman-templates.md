@@ -1,18 +1,27 @@
 # Prodman Templates
 
+## Contributor Identification
+
+Before creating any artifacts, determine which contributor is working:
+
+1. Read `.prodman/config.yaml` — it lists contributors with their initials (e.g., `ND`, `TB`)
+2. Each contributor has their own counters (`counters.epic`, `counters.spec`)
+3. Use the contributor's initials as `{ID}` in all IDs below
+4. If the contributor is not in the config, ask them to add themselves first
+
 ## Epic Template
 
-Create at `.prodman/epics/EP-{XXX}-{slug}.yaml`:
+Create at `.prodman/epics/EP-{ID}-{XXX}-{slug}.yaml`:
 
 ```yaml
 # Epic: {title}
-id: EP-{XXX}
+id: EP-{ID}-{XXX}
 title: {title}
 status: planned
 priority: {p0|p1|p2|p3}
-owner: null
+owner: {ID}
 milestone: null
-spec: SPEC-{XXX}
+spec: SPEC-{ID}-{XXX}
 
 description: |
   {2-4 sentence description of the feature.}
@@ -39,21 +48,22 @@ updated_at: "{YYYY-MM-DD}"
 ```
 
 **Notes:**
-- `id` numbers come from `.prodman/config.yaml` `counters.epic` (use next value, then increment)
-- `spec` references the corresponding SPEC-XXX
+- `{ID}` is the contributor's initials (e.g., `ND`, `TB`)
+- `{XXX}` numbers come from `.prodman/config.yaml` under `contributors.{ID}.counters.epic` (use next value, then increment)
+- `spec` references the corresponding SPEC-{ID}-XXX
 - `acceptance_criteria` grouped by category (e.g., `visual`, `functionality`, `integration`)
 - Keep scope realistic — only what was discussed in brainstorm
 
 ## Spec Template
 
-Create at `.prodman/specs/SPEC-{XXX}-{slug}.md`:
+Create at `.prodman/specs/SPEC-{ID}-{XXX}-{slug}.md`:
 
 ```markdown
 # {Feature Name} Implementation Plan
 
 > **For the Ralph loop:** Follow this plan task-by-task. Track progress in `progress.txt`.
 
-**Epic:** EP-{XXX}
+**Epic:** EP-{ID}-{XXX}
 **Goal:** {One sentence}
 **Architecture:** {2-3 sentences about approach}
 
@@ -97,7 +107,7 @@ Tests should be:
 ### Final Verification
 
 - [ ] All tasks implemented per spec
-- [ ] All acceptance criteria from EP-{XXX} met
+- [ ] All acceptance criteria from EP-{ID}-{XXX} met
 - [ ] `progress.txt` shows all tasks complete
 - [ ] `.artefacts/{feature-slug}/TESTING.md` created
 - [ ] `.artefacts/{feature-slug}/CHANGELOG.md` created
@@ -111,10 +121,12 @@ Tests should be:
 
 ## Config Update
 
-After creating both artifacts, update `.prodman/config.yaml`:
+After creating both artifacts, update `.prodman/config.yaml` under the contributor's key:
 
 ```yaml
-counters:
-  epic: {previous + 1}
-  spec: {previous + 1}
+contributors:
+  {ID}:
+    counters:
+      epic: {previous + 1}
+      spec: {previous + 1}
 ```
