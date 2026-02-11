@@ -10,23 +10,57 @@ Quick refinement, then straight from feature description to prodman artifacts an
 ## Process Overview
 
 ```
-Phase 1: Context   → Quick codebase scan
+Phase 1: Context   → Structured context discovery (same as ralph-planner, but faster)
 Phase 2: Refine    → 2-4 targeted questions to sharpen the feature
 Phase 3: Artifacts → Create epic + spec
 Phase 4: Launch    → Generate /ralph-wiggum:ralph-loop command
 ```
 
-## Phase 1: Quick Context Scan
+## Phase 1: Structured Context Discovery
 
-Gather context to inform your refinement questions.
+Gather context to inform your refinement questions. Use the same structured approach as ralph-planner, but prioritize speed.
 
-- Read `.prodman/roadmap.yaml` and recent epics in `.prodman/epics/` for project state
-- Explore relevant codebase areas based on the user's description
-- Read `CLAUDE.md` and `AGENTS.md` for project conventions
+### Step 1: Read project foundations (required)
+
+1. `CLAUDE.md` - Project conventions and architecture overview
+2. `.prodman/roadmap.yaml` - Current product state
+3. `.prodman/config.yaml` - Current epic/spec counters
+
+### Step 2: Explore feature domain (strategic but fast)
+
+Based on the user's feature request, identify the domain:
+- Auth/Users → "auth", "user", "session", "login"
+- Billing/Payments → "payment", "stripe", "subscription", "checkout"
+- Tasks/Content → "{feature-name}", "create", "update", "delete"
+
+Then execute **targeted exploration**:
+
+```bash
+# Step A: Find relevant files
+Grep pattern="{domain-keywords}" glob="**/*.{ts,js,tsx,jsx}"
+output_mode="files_with_matches"
+
+# Step B: Identify data models (if relevant)
+Grep pattern="{Domain}|{domain}" glob="**/schema.prisma"
+output_mode="content"
+OR
+Grep pattern="model {Domain}" glob="**/models/*.ts"
+output_mode="content"
+
+# Step C: Read 1-2 most relevant files to understand patterns
+Read the top 1-2 files from Step A to understand:
+- How similar features are structured
+- State management patterns
+- Error handling conventions
+```
+
+**If CLAUDE.md has "Exploration Hints":** Follow them exactly.
+
+**If exploration finds > 10 relevant files:** Use Task tool with subagent_type="Explore" and thoroughness="quick" to get a focused summary.
 
 ## Phase 2: Refinement Questions
 
-Ask **2-4 targeted questions** using AskUserQuestion to sharpen what the user wants. Focus on things that would materially change the implementation:
+**Now that you have context**, ask **2-4 targeted questions** using AskUserQuestion to sharpen what the user wants. Focus on things that would materially change the implementation:
 
 - **Scope boundaries** — What's in vs. out? (e.g., "Should this also handle X or just Y?")
 - **Key UX/behavior decisions** — How should it work from the user's perspective? (e.g., "Inline editing or modal?")
@@ -35,9 +69,14 @@ Ask **2-4 targeted questions** using AskUserQuestion to sharpen what the user wa
 
 **Rules:**
 - Keep it to ONE round of questions (no back-and-forth)
-- Don't ask about things you can infer from the codebase or conventions
+- Don't ask about things you already learned from the context discovery
 - Don't ask about implementation details you can decide yourself
 - If the user's description is already very detailed, you can skip to Phase 3 with a brief confirmation instead
+
+**Conclude Phase 2 when:**
+- Feature scope is clear enough to write a detailed spec
+- Technical approach aligns with existing patterns from your context discovery
+- Files to create/modify are identified
 
 ## Phase 3: Prodman Artifacts
 
@@ -85,7 +124,8 @@ Here's your Ralph loop command (~N iterations estimated for X tasks):
 
 ## Key Principles
 
-- **Refine, don't brainstorm** — Ask 2-4 targeted questions to sharpen scope, then move on. One round only.
-- **Speed** — Get to the loop command fast, the refinement step should take under a minute
+- **Structured discovery** — Use the same structured context discovery as ralph-planner (read foundations, explore domain strategically), but prioritize speed (read 1-2 files vs 2-3, use thoroughness="quick" for Explore agent)
+- **Refine, don't brainstorm** — Ask 2-4 targeted questions informed by your context discovery to sharpen scope, then move on. One round only.
+- **Speed** — Get to the loop command fast. Context discovery should be focused and strategic, refinement should take under a minute.
 - **Same quality** — Same spec format, same progress tracking, same best-practices checklist as ralph-planner (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md))
 - **YAGNI** — Only plan what was described, no bonus features
