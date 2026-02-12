@@ -116,7 +116,7 @@ Generate the prompt file and launch command for the Ralph bash loop.
 
 **Codex review flag:** Ask the user if they want the codex review gate enabled. If yes, add the codex steps to PROMPT.md. If no (default), skip it.
 
-**Output format:**
+**Output format — present BOTH commands:**
 
 ~~~
 .artefacts/{slug}/PROMPT.md has been created.
@@ -124,9 +124,16 @@ Generate the prompt file and launch command for the Ralph bash loop.
 **What it will do** (~N iterations estimated for X tasks):
 - [1-line summary per major task group]
 
-**To launch**, run this from your terminal:
+**To launch**, pick one and run from your terminal:
+
+**Standard loop** (implementation only):
 ```bash
-cd {absolute project path} && ~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-{ID}-XXX COMPLETE" --max-iterations N
+cd {absolute project path} && ralph.sh --dir .artefacts/{slug} --promise "EP-{ID}-XXX COMPLETE" --max-iterations N
+```
+
+**Extended loop** (implementation + verification + auto-generated next-steps on a new branch):
+```bash
+cd {absolute project path} && ralph-extended.sh --dir .artefacts/{slug} --promise "EP-{ID}-XXX COMPLETE" --max-iterations N
 ```
 
 **To stop:** Ctrl+C
@@ -140,4 +147,4 @@ cd {absolute project path} && ~/.claude/scripts/ralph.sh --dir .artefacts/{slug}
 - **Anti-premature-completion** — The prompt has explicit guardrails against outputting `<promise>` before ALL tasks are done
 - **Best practices** — The loop runs the shared best-practices checklist (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md)) after implementation: code simplification, artefacts, CLAUDE.md maintenance, convention compliance, YAGNI check, and optional codex review
 - **User launches** — Always write PROMPT.md and output the terminal command, never auto-launch
-- **Bash loop** — Uses `~/.claude/scripts/ralph.sh` (original Ralph technique), not the broken plugin
+- **Bash loop** — Uses `ralph.sh` or `ralph-extended.sh` from `~/bin/` (both in PATH). Extended adds verification + next-steps loop on a separate branch

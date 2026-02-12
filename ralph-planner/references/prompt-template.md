@@ -8,13 +8,19 @@ The skills generate a prompt file in the artefact folder and a launch command:
 
 Contains the full task prompt with progress tracking, pacing rules, workflow, best practices, and completion promise.
 
-### 2. Launch command
+### 2. Launch commands
 
+**Standard loop** (implementation only):
 ```bash
-~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-{ID}-{XXX} COMPLETE" --max-iterations {N}
+ralph.sh --dir .artefacts/{slug} --promise "EP-{ID}-{XXX} COMPLETE" --max-iterations {N}
 ```
 
-Run from the project root. The script reads `.artefacts/{slug}/PROMPT.md` and pipes it to Claude repeatedly.
+**Extended loop** (implementation + verification + auto-generated next-steps on a new branch):
+```bash
+ralph-extended.sh --dir .artefacts/{slug} --promise "EP-{ID}-{XXX} COMPLETE" --max-iterations {N}
+```
+
+Run from the project root. Both scripts are in `~/bin/` (in PATH). They read `.artefacts/{slug}/PROMPT.md` and pipe it to Claude repeatedly.
 
 ## PROMPT.md Structure
 
@@ -127,8 +133,12 @@ PROGRESS TRACKING:
 Output <promise>EP-ND-002 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
 ```
 
-**Launch command:**
+**Launch commands:**
 
 ```bash
-~/.claude/scripts/ralph.sh --dir .artefacts/quick-start --promise "EP-ND-002 COMPLETE" --max-iterations 18
+ralph.sh --dir .artefacts/quick-start --promise "EP-ND-002 COMPLETE" --max-iterations 18
+```
+or extended:
+```bash
+ralph-extended.sh --dir .artefacts/quick-start --promise "EP-ND-002 COMPLETE" --max-iterations 18
 ```

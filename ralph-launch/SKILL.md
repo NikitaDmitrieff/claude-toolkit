@@ -109,7 +109,7 @@ Generate the prompt file and launch command. Follow the exact same template as r
 
 **Codex review:** Off by default. If the user says `--codex` or asks for codex review, include it.
 
-**Output format:**
+**Output format — present BOTH commands:**
 
 ~~~
 .artefacts/{slug}/PROMPT.md has been created.
@@ -117,9 +117,16 @@ Generate the prompt file and launch command. Follow the exact same template as r
 **What it will do** (~N iterations estimated for X tasks):
 - [1-line summary per major task group]
 
-**To launch**, run this from your terminal:
+**To launch**, pick one and run from your terminal:
+
+**Standard loop** (implementation only):
 ```bash
-cd {absolute project path} && ~/.claude/scripts/ralph.sh --dir .artefacts/{slug} --promise "EP-{ID}-XXX COMPLETE" --max-iterations N
+cd {absolute project path} && ralph.sh --dir .artefacts/{slug} --promise "EP-{ID}-XXX COMPLETE" --max-iterations N
+```
+
+**Extended loop** (implementation + verification + auto-generated next-steps on a new branch):
+```bash
+cd {absolute project path} && ralph-extended.sh --dir .artefacts/{slug} --promise "EP-{ID}-XXX COMPLETE" --max-iterations N
 ```
 
 **To stop:** Ctrl+C
@@ -131,5 +138,5 @@ cd {absolute project path} && ~/.claude/scripts/ralph.sh --dir .artefacts/{slug}
 - **Refine, don't brainstorm** — Ask 2-4 targeted questions to sharpen scope, then move on. One round only.
 - **Speed** — Get to the loop command fast, the refinement step should take under a minute
 - **Same quality** — Same spec format, same artefact-scoped progress tracking, same best-practices checklist as ralph-planner (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md))
-- **Bash loop** — Uses `~/.claude/scripts/ralph.sh` (original Ralph technique), not the broken plugin
+- **Bash loop** — Uses `ralph.sh` or `ralph-extended.sh` from `~/bin/` (both in PATH). Extended adds verification + next-steps loop on a separate branch
 - **YAGNI** — Only plan what was described, no bonus features
