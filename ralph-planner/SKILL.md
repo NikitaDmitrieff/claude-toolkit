@@ -79,11 +79,14 @@ UI/UX Expert: {uiuxLevel > 0 ? uiuxLevel + '/5' : '❌ disabled'}
 ```
 Invoke Skill tool with:
 - skill: "superpowers:brainstorming"
-- args: "After creating and committing the design document, STOP. Do NOT invoke writing-plans. Ralph-planner will create the prodman artifacts (epic + spec) instead."
+- args: "Depth level: {brainstormingDepth}/5. After creating and committing the design document, STOP. Do NOT invoke writing-plans. Ralph-planner will create the prodman artifacts (epic + spec) instead."
 ```
 
 **What this does:**
-- Brainstorming will explore context, ask questions, propose approaches
+- Brainstorming will run at depth level {brainstormingDepth}/5
+- At lower levels (1-2): fewer questions, faster exploration, concise design
+- At higher levels (4-5): comprehensive questions, thorough exploration, detailed design
+- It will explore context, ask questions, propose approaches
 - It will present a design section by section
 - It will create `docs/plans/YYYY-MM-DD-{topic}-design.md`
 - It will commit the design doc
