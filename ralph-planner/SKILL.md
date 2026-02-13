@@ -113,9 +113,9 @@ Invoke Skill tool with:
 
 ---
 
-### STEP 2: Spawn Expert Subagents
+### STEP 2: Spawn Expert Subagents (Conditional)
 
-Once you have the design document and contributor info, spawn 3 expert subagents to create detailed specifications.
+Once you have the design document and contributor info, conditionally spawn expert subagents based on their levels.
 
 **Preparation:**
 
@@ -124,85 +124,168 @@ Once you have the design document and contributor info, spawn 3 expert subagents
 3. **Calculate epic ID**: `EP-{CONTRIBUTOR}-{NEXT_NUMBER}` (e.g., `EP-TB-003`)
 4. **Create artifacts directory**: `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/`
 
-**Actions - Spawn 3 subagents using Task tool:**
+**Track available artifacts:** Start with `[design.md]`
 
-You MUST spawn all 3 subagents to create the expert specifications.
+**Actions - Conditionally spawn agents based on levels:**
 
-#### Subagent 1: Product Manager Expert
+Each agent section below should only execute if its level > 0.
 
-**Spawn with Task tool:**
+#### Subagent 1: Product Manager Expert (if pmLevel > 0)
+
+**Check:** If `pmLevel == 0`, skip this agent entirely and proceed to Architecture Expert.
+
+**If pmLevel >= 1, spawn with Task tool:**
+
 - `subagent_type`: "general-purpose"
-- `description`: "Create PRD for {feature name}"
-- `prompt`: Read and use the full prompt from `ralph-planner/subagents/product-manager-prompt.md`
+- `description`: "Create PRD for {feature name} at depth {pmLevel}/5"
+- `prompt`: Construct prompt as follows:
 
-**Input to provide:**
+**Prompt construction:**
+1. Read `ralph-planner/subagents/product-manager-prompt.md`
+2. Replace all instances of `{LEVEL}` with the actual `pmLevel` value
+3. Pass the resulting prompt to the Task tool
+
+**Input to provide in the prompt:**
 - The design.md content
 - Epic ID (e.g., `EP-TB-003`)
+- Depth level: {pmLevel}/5
 - Project context (tech stack, existing features)
 
 **Expected output:**
 - `PRD.md` saved to `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/PRD.md`
 - Contains: problem statement, success metrics, user stories, acceptance criteria, scope, NFRs
+- Detail level scales with pmLevel (1-2 = concise, 3 = standard, 4-5 = comprehensive)
+
+**Inform user:**
+```
+🤖 Spawning Product Manager expert (depth {pmLevel}/5)...
+```
+
+**After completion:**
+```
+✓ PRD created at .prodman/artifacts/{epic}/PRD.md
+```
+
+**Update available artifacts:** `[design.md, PRD.md]`
 
 ---
 
-#### Subagent 2: Architecture Expert
+#### Subagent 2: Architecture Expert (if archLevel > 0)
 
-**Spawn with Task tool:**
+**Check:** If `archLevel == 0`, skip this agent entirely and proceed to UI/UX Expert.
+
+**If archLevel >= 1, spawn with Task tool:**
+
 - `subagent_type`: "general-purpose"
-- `description`: "Create architecture doc for {feature name}"
-- `prompt`: Read and use the full prompt from `ralph-planner/subagents/architecture-expert-prompt.md`
+- `description`: "Create architecture doc for {feature name} at depth {archLevel}/5"
+- `prompt`: Construct prompt as follows:
 
-**Input to provide:**
+**Prompt construction:**
+1. Read `ralph-planner/subagents/architecture-expert-prompt.md`
+2. Replace all instances of `{LEVEL}` with the actual `archLevel` value
+3. Pass the resulting prompt to the Task tool
+
+**Input to provide in the prompt:**
 - The design.md content
-- The PRD.md from Product Manager (wait for it to complete first)
+- The PRD.md from Product Manager **if it exists** (check if pmLevel > 0)
+  - If PRD exists: include it in context
+  - If PRD doesn't exist: note "⚠️ No PRD available. Extract product requirements from design.md directly."
 - Epic ID
+- Depth level: {archLevel}/5
 - Project context (existing architecture, tech stack, database schema)
 
 **Expected output:**
 - `ARCHITECTURE.md` saved to `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/ARCHITECTURE.md`
 - Contains: ADRs, C4 diagrams, database schema, API specs, NFR coverage, implementation guidance
+- Detail level scales with archLevel (1-2 = core only, 3 = standard, 4-5 = comprehensive)
+
+**Inform user:**
+```
+🤖 Spawning Architecture expert (depth {archLevel}/5)...
+{if PRD available: '   Using PRD as input'}
+{if no PRD: '   ⚠️ No PRD available, using design.md only'}
+```
+
+**After completion:**
+```
+✓ Architecture document created at .prodman/artifacts/{epic}/ARCHITECTURE.md
+```
+
+**Update available artifacts:** `[design.md, {PRD.md if exists}, ARCHITECTURE.md]`
 
 ---
 
-#### Subagent 3: UI/UX Expert
+#### Subagent 3: UI/UX Expert (if uiuxLevel > 0)
 
-**Spawn with Task tool:**
+**Check:** If `uiuxLevel == 0`, skip this agent entirely and proceed to STEP 3.
+
+**If uiuxLevel >= 1, spawn with Task tool:**
+
 - `subagent_type`: "general-purpose"
-- `description`: "Create UI specification for {feature name}"
-- `prompt`: Read and use the full prompt from `ralph-planner/subagents/ui-ux-expert-prompt.md`
+- `description`: "Create UI specification for {feature name} at depth {uiuxLevel}/5"
+- `prompt`: Construct prompt as follows:
 
-**Input to provide:**
+**Prompt construction:**
+1. Read `ralph-planner/subagents/ui-ux-expert-prompt.md`
+2. Replace all instances of `{LEVEL}` with the actual `uiuxLevel` value
+3. Pass the resulting prompt to the Task tool
+
+**Input to provide in the prompt:**
 - The design.md content
-- The PRD.md from Product Manager
-- The ARCHITECTURE.md from Architecture Expert
+- The PRD.md from Product Manager **if it exists** (check if pmLevel > 0)
+- The ARCHITECTURE.md from Architecture Expert **if it exists** (check if archLevel > 0)
 - Epic ID
+- Depth level: {uiuxLevel}/5
 - Project context (existing design system, UI framework)
+
+**Context notes to include:**
+- If both PRD and ARCHITECTURE exist: "You have full context from PM and Architecture experts."
+- If only PRD exists: "⚠️ No architecture doc available. Infer technical constraints from design.md."
+- If only ARCHITECTURE exists: "⚠️ No PRD available. Extract user requirements from design.md."
+- If neither exists: "⚠️ No PRD or Architecture docs. Use design.md as sole source."
 
 **Expected output:**
 - `UI-SPEC.md` saved to `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/UI-SPEC.md`
 - Contains: design tokens, component library, accessibility requirements, responsive design, interaction flows
+- Detail level scales with uiuxLevel (1-2 = essentials, 3 = standard, 4-5 = comprehensive)
+
+**Inform user:**
+```
+🤖 Spawning UI/UX expert (depth {uiuxLevel}/5)...
+{list which docs are available as input}
+```
+
+**After completion:**
+```
+✓ UI specification created at .prodman/artifacts/{epic}/UI-SPEC.md
+```
+
+**Update available artifacts:** `[design.md, {PRD.md if exists}, {ARCHITECTURE.md if exists}, UI-SPEC.md]`
 
 ---
 
 **Execution Strategy:**
 
 - **Sequential execution recommended** (not parallel) to allow each expert to build on previous work:
-  1. Product Manager first (defines WHAT and WHY)
-  2. Architecture Expert second (defines HOW - technical)
-  3. UI/UX Expert third (defines HOW - interface)
+  1. Product Manager first (if enabled) - defines WHAT and WHY
+  2. Architecture Expert second (if enabled) - defines HOW (technical), uses PRD if available
+  3. UI/UX Expert third (if enabled) - defines HOW (interface), uses PRD and/or ARCHITECTURE if available
 
-- **Inform user** while subagents are working:
+- **Agents handle missing inputs:** Each agent can work with design.md alone if previous agents were disabled
+
+- **Inform user** while subagents are working (examples):
   ```
-  🤖 Spawning Product Manager expert...
+  🎛️ Configuration: PM 4/5, Arch 3/5, UI/UX 0 (disabled)
+
+  🤖 Spawning Product Manager expert (depth 4/5)...
   ✓ PRD created
-  🤖 Spawning Architecture expert...
+  🤖 Spawning Architecture expert (depth 3/5)...
+     Using PRD as input
   ✓ Architecture document created
-  🤖 Spawning UI/UX expert...
-  ✓ UI specification created
+  ⏭️ Skipping UI/UX expert (disabled)
   ```
 
-**After all 3 subagents complete, continue to STEP 3.**
+**After all enabled subagents complete, continue to STEP 3.**
 
 ---
 
