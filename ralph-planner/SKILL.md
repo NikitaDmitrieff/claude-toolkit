@@ -5,112 +5,81 @@ description: "Plan features through collaborative brainstorming, then generate a
 
 # Ralph Planner
 
-Plan features collaboratively, create prodman artifacts, and generate a tailored Ralph loop command.
+Three-step workflow: invoke brainstorming skill → create prodman artifacts → generate Ralph loop command.
 
-## Process Overview
+## Workflow
+
+### STEP 1: Invoke Brainstorming Skill
+
+**Your very first action:**
 
 ```
-Phase 1: Brainstorm → Understand what to build
-Phase 2: Artifacts  → Create epic + spec (the implementation plan)
-Phase 3: Launch     → Generate /ralph-wiggum:ralph-loop command for the user to copy
+Invoke Skill tool with:
+- skill: "superpowers:brainstorming"
+- args: "After creating and committing the design document, STOP. Do NOT invoke writing-plans. Ralph-planner will create the prodman artifacts (epic + spec) instead."
 ```
 
-## Phase 1: Brainstorm
+**What this does:**
+- Brainstorming will explore context, ask questions, propose approaches
+- It will present a design section by section
+- It will create `docs/plans/YYYY-MM-DD-{topic}-design.md`
+- It will commit the design doc
+- Then it will STOP (not invoke writing-plans)
 
-Understand the feature through adaptive questioning.
+**After brainstorming completes, continue to STEP 2.**
 
-### Step 1: Structured Context Discovery (BEFORE questioning)
+---
 
-**Read project foundations (required):**
-1. `CLAUDE.md` - Project conventions and architecture overview
-2. `.prodman/roadmap.yaml` - Current product state
-3. `.prodman/config.yaml` - Current epic/spec counters
+### STEP 2: Create Prodman Artifacts
 
-**Explore feature domain (strategic):**
+Once you have the design document from brainstorming, create the epic and spec.
 
-Based on the user's feature request, identify the domain:
-- Auth/Users → "auth", "user", "session", "login"
-- Billing/Payments → "payment", "stripe", "subscription", "checkout"
-- Tasks/Content → "{feature-name}", "create", "update", "delete"
+**Actions:**
 
-Then execute targeted exploration:
+1. **Read the design document** from `docs/plans/YYYY-MM-DD-{topic}-design.md`
+2. **Read current counters** from `.prodman/config.yaml`
+3. **Create epic** at `.prodman/epics/EP-{next}-{slug}.yaml`
+4. **Create spec** at `.prodman/specs/SPEC-{next}-{slug}.md`
+5. **Update counters** in `.prodman/config.yaml` (increment `epic` and `spec`)
 
-```bash
-# Step A: Find relevant files
-Grep pattern="{domain-keywords}" glob="**/*.{ts,js,tsx,jsx}"
-output_mode="files_with_matches"
+**Converting design to spec:**
 
-# Step B: Identify data models
-Grep pattern="{Domain}|{domain}" glob="**/schema.prisma"
-output_mode="content"
-OR
-Grep pattern="model {Domain}" glob="**/models/*.ts"
-output_mode="content"
+The spec is a bite-sized task list derived from the design:
+- Architecture section → identify components/files to create
+- Data flow section → identify integration points
+- Testing strategy → create final testing task
+- Break into sequential tasks (each = one commit)
 
-# Step C: Find existing patterns
-Read the 2-3 most relevant files from Step A to understand:
-- How similar features are structured
-- State management patterns
-- Error handling conventions
-- Testing approaches
-```
+**Spec format:** See [references/prodman-templates.md](references/prodman-templates.md)
 
-**If CLAUDE.md has "Exploration Hints":** Follow them exactly - the user has pre-defined exploration paths.
-
-**If exploration finds > 10 relevant files OR spans multiple apps:** Use Task tool with subagent_type="Explore" and thoroughness="medium" to get a comprehensive summary.
-
-### Step 2: Adaptive Questioning
-
-**Adaptive questioning rules:**
-- **Ambiguous feature:** One question per message, prefer multiple choice, propose 2-3 approaches with your recommendation
-- **Shape becomes clear:** Can ask 2-3 related questions per message, mix open-ended and multiple choice
-- **Signal to move on:** When you can describe the feature's scope, files affected, and approach without uncertainty
-
-**Conclude Phase 1 when:**
-- Feature scope is clear
-- Technical approach is decided
-- Files to create/modify are identified
-- Edge cases and constraints are understood
-
-## Phase 2: Prodman Artifacts
-
-Create the epic and spec. See [references/prodman-templates.md](references/prodman-templates.md) for exact formats.
-
-**Steps:**
-
-1. **Read current counters** from `.prodman/config.yaml`
-2. **Create epic** at `.prodman/epics/EP-{next}-{slug}.yaml`
-3. **Create spec** at `.prodman/specs/SPEC-{next}-{slug}.md` — this IS the implementation plan
-4. **Update counters** in `.prodman/config.yaml` (increment `epic` and `spec`)
-
-**Spec format:** Bite-sized tasks with exact file paths and commit points. See [references/prodman-templates.md](references/prodman-templates.md) for the full template.
-
-**Each task in the spec MUST include:**
+**Each task MUST include:**
 - Exact files to create/modify with paths
 - Clear implementation description
 - Commit message
 
-**Testing approach (in the spec):**
+**Testing approach:**
 - Do NOT require per-task unit tests or TDD
-- For substantial features: include a final task to write e2e/functional tests that exercise the real user flow
-- Tests should be comprehensible to a non-developer — they mirror what a user would actually do
-- For trivial features (copy changes, config tweaks, small UI fixes): no tests needed
+- For substantial features: final task writes e2e/functional tests
+- Tests mirror real user flow
+- For trivial features: no tests needed
 
-## Phase 3: Generate Ralph Loop Command
+---
 
-Generate a `/ralph-wiggum:ralph-loop` command the user can copy-paste.
+### STEP 3: Generate Ralph Loop Command
+
+Generate a `/ralph-wiggum:ralph-loop` command for the user to copy-paste.
 
 **Iteration estimate:**
-- Count the number of tasks in the spec
-- Multiply by 2-3 (each task may take multiple iterations)
-- Add 2-3 buffer iterations for unexpected issues
-- Present: "I estimate ~N iterations based on X tasks. Adjust as needed."
+- Count tasks in spec
+- Multiply by 2-3 (buffer for iterations)
+- Add 2-3 extra buffer
+- Present: "I estimate ~N iterations based on X tasks"
 
-**Completion promise:** Always `EP-{XXX} COMPLETE` (standardized format).
+**Completion promise:** Always `EP-{XXX} COMPLETE`
 
-**Codex review flag:** Ask the user if they want the codex review gate enabled. If yes, add `WITH CODEX REVIEW` to the prompt. If no (default), skip it.
+**Codex review:** Ask user if they want codex review gate. If yes, add `WITH CODEX REVIEW` to prompt.
 
-**Prompt structure:** See [references/prompt-template.md](references/prompt-template.md) for the exact template.
+**Prompt structure:** See [references/prompt-template.md](references/prompt-template.md) for exact template.
 
 **Output format:**
 
@@ -131,7 +100,7 @@ Here's your Ralph loop command (~N iterations estimated for X tasks):
 ## Key Principles
 
 - **Plans are specs** — The spec in `.prodman/specs/` is the single source of truth
-- **Progress tracking** — The loop uses `progress.txt` at project root to track completed tasks across iterations
-- **Anti-premature-completion** — The prompt has explicit guardrails against outputting `<promise>` before ALL tasks are done
-- **Best practices** — The loop runs the shared best-practices checklist (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md)) after implementation: code simplification, artefacts, CLAUDE.md maintenance, convention compliance, YAGNI check, and optional codex review
-- **User launches** — Always output the command for copy-paste, never auto-launch
+- **Progress tracking** — Loop uses `progress.txt` to track completed tasks
+- **Anti-premature-completion** — Explicit guardrails against early `<promise>` output
+- **Best practices** — Loop runs shared checklist after implementation (see [../follow-best-practices/references/checklist.md](../follow-best-practices/references/checklist.md))
+- **User launches** — Always output command for copy-paste, never auto-launch
