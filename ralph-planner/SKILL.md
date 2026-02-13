@@ -11,6 +11,67 @@ Five-step workflow: brainstorming → ask contributor → spawn expert subagents
 
 ## Workflow
 
+### STEP 0: Parse Arguments and Display Configuration
+
+**Parse the args parameter:**
+
+The skill receives args as a string (e.g., "-b3 -pm4 -arch2 -uiux0").
+
+Extract depth levels:
+- `brainstormingDepth` = extract '-b' value, default 5
+- `pmLevel` = extract '-pm' value, default 5
+- `archLevel` = extract '-arch' value, default 5
+- `uiuxLevel` = extract '-uiux' value, default 5
+
+**Parsing logic:**
+```javascript
+// Pseudo-code for parsing
+function extractLevel(args, flag, defaultValue = 5) {
+  const match = args.match(new RegExp(`-${flag}(\\d)`))
+  if (!match) return defaultValue
+  const level = parseInt(match[1])
+  if (level < 0 || level > 5) {
+    throw new Error(`Invalid level ${level} for -${flag}. Must be 0-5.`)
+  }
+  return level
+}
+
+const brainstormingDepth = extractLevel(args, 'b')
+const pmLevel = extractLevel(args, 'pm')
+const archLevel = extractLevel(args, 'arch')
+const uiuxLevel = extractLevel(args, 'uiux')
+```
+
+**Validation:**
+- All levels must be 0-5
+- If args is empty or undefined, use all defaults (5, 5, 5, 5)
+- If invalid level found, show error with syntax reminder:
+  ```
+  ❌ Invalid level for -{flag}. Must be 0-5.
+
+  Syntax: /ralph-planner [-bN] [-pmN] [-archN] [-uiuxN]
+  Where N is 0-5 (0 = disabled for agents, 1-5 = depth level)
+  ```
+
+**Display configuration:**
+
+After successful parsing, display to user:
+
+```
+🎛️ Ralph Planner Configuration:
+
+Brainstorming depth: {brainstormingDepth}/5
+Product Manager: {pmLevel > 0 ? pmLevel + '/5' : '❌ disabled'}
+Architecture Expert: {archLevel > 0 ? archLevel + '/5' : '❌ disabled'}
+UI/UX Expert: {uiuxLevel > 0 ? uiuxLevel + '/5' : '❌ disabled'}
+
+{if all agents disabled: '⚠️ All agents disabled - spec will be created directly from design.md'}
+```
+
+**After displaying config, continue to STEP 1.**
+
+---
+
 ### STEP 1: Invoke Brainstorming Skill
 
 **Your very first action:**
