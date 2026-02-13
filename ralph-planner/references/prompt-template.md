@@ -46,8 +46,12 @@ BEST PRACTICES (after ALL implementation tasks are done):
 2. Create review artefacts:
    - .artefacts/{feature-slug}/TESTING.md — Manual testing guide with exact steps, expected results, and edge cases.
    - .artefacts/{feature-slug}/CHANGELOG.md — What changed: summary, files modified, breaking changes.
-3. Run /claude-md-improver and /claude-md-management:revise-claude-md to keep CLAUDE.md current.
-4. Verify all code follows CLAUDE.md and AGENTS.md conventions.
+3. Update CLAUDE.md with learnings from this session:
+   - Review the implementation for patterns, commands, or gotchas worth documenting
+   - Draft concise additions (one-line format: `<command>` - `<brief description>`)
+   - Directly append to CLAUDE.md using the Edit tool (no approval needed in loop context)
+   - Keep additions minimal - only genuinely useful context for future Claude sessions
+4. Verify all code follows CLAUDE.md conventions.
 5. Check for YAGNI violations — no features beyond what the spec describes.
 {codex_review_step}
 
@@ -63,8 +67,8 @@ CRITICAL — DO NOT COMPLETE EARLY:
   2. `progress.txt` shows ALL tasks as complete
   3. /code-simplifier has been run
   4. Review artefacts are created in .artefacts/{feature-slug}/
-  5. /claude-md-improver and /claude-md-management:revise-claude-md have been run
-  6. Code follows CLAUDE.md and AGENTS.md conventions
+  5. CLAUDE.md has been updated with session learnings (if applicable)
+  6. Code follows CLAUDE.md conventions
   7. No YAGNI violations
   {codex_review_check}
 - If ANY task is incomplete, keep working. You have plenty of iterations.
@@ -140,7 +144,11 @@ BEST PRACTICES (after ALL implementation tasks are done):
 2. Create review artefacts:
    - .artefacts/quick-start/TESTING.md — Manual testing guide with exact steps, expected results, and edge cases.
    - .artefacts/quick-start/CHANGELOG.md — What changed: summary, files modified, breaking changes.
-3. Run /claude-md-improver and /claude-md-management:revise-claude-md to keep CLAUDE.md current.
+3. Update CLAUDE.md with learnings from this session:
+   - Review the implementation for patterns, commands, or gotchas worth documenting
+   - Draft concise additions (one-line format: `<command>` - `<brief description>`)
+   - Directly append to CLAUDE.md using the Edit tool (no approval needed in loop context)
+   - Keep additions minimal - only genuinely useful context for future Claude sessions
 4. Verify all code follows CLAUDE.md and AGENTS.md conventions.
 5. Check for YAGNI violations — no features beyond what the spec describes.
 
@@ -156,7 +164,7 @@ CRITICAL — DO NOT COMPLETE EARLY:
   2. progress.txt shows ALL tasks as complete
   3. /code-simplifier has been run
   4. Review artefacts are created in .artefacts/quick-start/
-  5. /claude-md-improver and /claude-md-management:revise-claude-md have been run
+  5. CLAUDE.md has been updated with session learnings (if applicable)
   6. Code follows CLAUDE.md and AGENTS.md conventions
   7. No YAGNI violations
 - If ANY task is incomplete, keep working. You have plenty of iterations.
