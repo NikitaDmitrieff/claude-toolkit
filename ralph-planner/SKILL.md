@@ -289,36 +289,100 @@ Each agent section below should only execute if its level > 0.
 
 ---
 
-### STEP 3: Assemble Ultra-Detailed Artifacts
+### STEP 3: Assemble Ultra-Detailed Artifacts (Adaptive)
 
-Now that you have PRD, ARCHITECTURE, and UI-SPEC, assemble them into epic and spec files.
+Now assemble epic and spec files from ALL available artifacts.
+
+**Adaptive strategy:** Epic and spec detail will scale based on which artifacts were created.
 
 **Actions:**
 
-1. **Read the 3 expert artifacts:**
-   - `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/PRD.md`
-   - `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/ARCHITECTURE.md`
-   - `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/UI-SPEC.md`
+1. **Collect all available artifacts:**
+
+   Start with base: `design.md` (always present)
+
+   Check and add if they exist:
+   - `PRD.md` (exists if pmLevel > 0)
+   - `ARCHITECTURE.md` (exists if archLevel > 0)
+   - `UI-SPEC.md` (exists if uiuxLevel > 0)
+
+   Track which artifacts are available for assembly.
 
 2. **Create epic** at `.prodman/epics/EP-{CONTRIBUTOR}-{NUMBER}-{slug}.yaml`
 
 **Epic format:** See [references/prodman-templates.md](references/prodman-templates.md)
 
-**Enhancements from expert artifacts:**
-- **description**: Use problem statement from PRD
-- **technical_scope**: Extract from ARCHITECTURE (components, APIs, database)
-- **acceptance_criteria**: Use from PRD, organized by category
-- **labels**: Add based on tech stack from ARCHITECTURE and UI framework from UI-SPEC
+**Adaptive assembly based on available artifacts:**
+
+**Base (from design.md - always available):**
+- **title**: Extract from design
+- **description**: Problem statement from design
+- **labels**: Basic labels from tech mentioned in design
+
+**+ PRD (if pmLevel > 0):**
+- **description**: Enhance with problem statement from PRD (more detailed)
+- **acceptance_criteria**: Use structured criteria from PRD, organized by category
+- **labels**: Add priority labels based on MoSCoW from PRD
+
+**+ ARCHITECTURE (if archLevel > 0):**
+- **technical_scope**: Extract components, APIs, database tables from ARCHITECTURE
+- **labels**: Add tech stack labels from ARCHITECTURE (e.g., react, typescript, postgresql)
+
+**+ UI-SPEC (if uiuxLevel > 0):**
+- **labels**: Add UI framework labels from UI-SPEC (e.g., tailwind, shadcn-ui, accessibility)
+
+**Result:** Epic detail scales with available artifacts.
 
 3. **Create spec** at `.prodman/specs/SPEC-{CONTRIBUTOR}-{NUMBER}-{slug}.md`
 
-**Spec format:** See [references/prodman-templates.md](references/prodman-templates.md) for enhanced template.
+**Spec format:** See [references/prodman-templates.md](references/prodman-templates.md) for template.
 
-**Converting artifacts to ultra-detailed spec:**
+**Adaptive task synthesis based on available artifacts:**
 
-For each task in the spec, synthesize information from all 3 artifacts:
+For each task in the spec, synthesize information from available sources.
 
-**Example Task Structure:**
+**Base task structure (from design.md only):**
+```markdown
+### Task N: {Component/Feature Name}
+
+**Files:**
+- Create: `{paths from design}`
+
+**Implementation Steps:**
+1. {High-level steps from design}
+
+**Commit:** `feat({scope}): {description}`
+```
+
+**Enhanced with PRD (if available):**
+Add to each task:
+```markdown
+**Product Requirements (from PRD.md):**
+{Relevant user stories and acceptance criteria for this task}
+{Success metrics this task contributes to}
+```
+
+**Enhanced with ARCHITECTURE (if available):**
+Add to each task:
+```markdown
+**Architecture Context (from ARCHITECTURE.md):**
+{Relevant component design, API contracts, data models}
+{Architecture decisions (ADRs) affecting this task}
+{Data flow and integration points}
+```
+
+**Enhanced with UI-SPEC (if available):**
+Add to each task:
+```markdown
+**UI Specification (from UI-SPEC.md):**
+- Layout: {Component layout and structure}
+- States: {loading, error, success states}
+- Interactions: {User interactions and flows}
+- Design Tokens: {Specific tokens to use}
+- Accessibility: {WCAG requirements, ARIA labels}
+```
+
+**Example - Full task with all artifacts:**
 ```markdown
 ### Task 3: Create UserProfileCard Component
 
@@ -326,6 +390,11 @@ For each task in the spec, synthesize information from all 3 artifacts:
 - Create: `src/components/UserProfileCard/UserProfileCard.tsx`
 - Create: `src/components/UserProfileCard/UserProfileCard.styles.ts`
 - Create: `src/components/UserProfileCard/types.ts`
+
+**Product Requirements (from PRD.md):**
+Fulfills user story US-2: "As a user, I want to see other users' profiles..."
+Must display user online status in real-time (AC-2.1), support accessibility,
+and meet performance target of < 1s status update latency.
 
 **Architecture Context (from ARCHITECTURE.md):**
 This component is part of the Profile module, implements the Observer pattern
@@ -339,30 +408,42 @@ services/user.ts. Data flow: API → Cache → Component state.
 - Design Tokens: spacing-md, color-primary-500, shadow-sm
 - Accessibility: ARIA labels required, WCAG 2.1 AA contrast
 
-**Product Requirements (from PRD.md):**
-Must display user online status in real-time (AC-2.1), support accessibility,
-and meet performance target of < 1s status update latency.
-
 **Implementation Steps:**
 1. Create type definitions in types.ts (User, ProfileCardProps)
 2. Implement component structure in UserProfileCard.tsx
-3. Add styled-components in .styles.ts using design tokens from UI-SPEC
-4. Wire up UserService.subscribe() for real-time updates (from ARCHITECTURE)
-5. Add ARIA labels for screen readers (from UI-SPEC accessibility)
+3. Add styled-components in .styles.ts using design tokens
+4. Wire up UserService.subscribe() for real-time updates
+5. Add ARIA labels for screen readers
 6. Test with keyboard navigation and screen reader
 
 **Commit:** `feat(profile): add UserProfileCard component with real-time status`
 ```
 
-**Task breakdown strategy:**
-- **From ARCHITECTURE**: File structure, component boundaries, API endpoints, database tables
-- **From UI-SPEC**: Component states, design tokens, accessibility requirements, responsive behavior
-- **From PRD**: User stories → features → tasks, acceptance criteria → verification steps
+**Example - Minimal task (design.md only, all agents disabled):**
+```markdown
+### Task 3: Create UserProfileCard Component
+
+**Files:**
+- Create: `src/components/UserProfileCard.tsx`
+
+**Implementation Steps:**
+1. Create component with basic user info display
+2. Add styling
+3. Test component renders correctly
+
+**Commit:** `feat(profile): add UserProfileCard component`
+```
+
+**Task breakdown sources:**
+- **From design.md**: High-level features → tasks
+- **From PRD** (if available): User stories → features → tasks, acceptance criteria → verification
+- **From ARCHITECTURE** (if available): File structure, component boundaries, API endpoints, database tables
+- **From UI-SPEC** (if available): Component states, design tokens, accessibility, responsive behavior
 
 **Testing approach:**
 - Do NOT require per-task unit tests or TDD
 - For substantial features: final task writes e2e/functional tests
-- Tests mirror real user flow from PRD user stories
+- Tests mirror real user flow from PRD user stories (if PRD available)
 - For trivial features: no tests needed
 
 4. **Update counters** in `.prodman/config.yaml`
