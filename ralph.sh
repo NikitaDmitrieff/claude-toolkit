@@ -15,11 +15,12 @@ set -eo pipefail
 
 # --- Defaults ---
 PROMPT_FILE="PROMPT.md"
-MAX_ITERATIONS=25
+MAX_ITERATIONS=30
 COMPLETION_PROMISE=""
 LOG_FILE=".ralph-output.log"
 PROMPT_DIR=""
 WORK_DIR=""
+DEBUG_MODE=false
 
 # --- Help ---
 show_help() {
@@ -35,6 +36,7 @@ OPTIONS:
   --prompt FILE           Prompt file to use (default: PROMPT.md, relative to --dir if specified)
   --max-iterations N      Max iterations before auto-stop (default: 25)
   --promise TEXT          Completion promise — stops when <promise>TEXT</promise> detected
+  --debug                 Show promise detection debug info after each iteration
   -h, --help             Show this help
 
 EXAMPLES:
@@ -74,6 +76,8 @@ while [[ $# -gt 0 ]]; do
     --promise)
       [[ -z "${2:-}" ]] && echo "Error: --promise requires text" >&2 && exit 1
       COMPLETION_PROMISE="$2"; shift 2 ;;
+    --debug)
+      DEBUG_MODE=true; shift ;;
     -h|--help) show_help; exit 0 ;;
     *) echo "Error: unknown option '$1'. Use --help for usage." >&2; exit 1 ;;
   esac
@@ -140,13 +144,25 @@ for i in $(seq 1 "$MAX_ITERATIONS"); do
   # Pipe prompt to Claude — allow non-zero exit (claude may exit 1 on some iterations)
   cat "$PROMPT_FILE" | claude --dangerously-skip-permissions 2>&1 | tee "$LOG_FILE" || true
 
-  # Check for completion promise in output
-  if [[ -n "$COMPLETION_PROMISE" ]] && grep -q "<promise>$COMPLETION_PROMISE</promise>" "$LOG_FILE" 2>/dev/null; then
-    echo ""
-    echo "══════════════════════════════════════════════"
-    echo "  Done! Promise detected after $i iterations."
-    echo "══════════════════════════════════════════════"
-    exit 0
+  # Check for completion promise in output (multi-line safe, whitespace tolerant)
+  if [[ -n "$COMPLETION_PROMISE" ]]; then
+    # Normalize whitespace: remove newlines and collapse spaces
+    NORMALIZED_LOG=$(tr -d '\n\r' < "$LOG_FILE" 2>/dev/null | tr -s ' ')
+    NORMALIZED_PROMISE="<promise>$COMPLETION_PROMISE</promise>"
+
+    if [[ "$DEBUG_MODE" == true ]]; then
+      echo ""
+      echo "[DEBUG] Looking for: $NORMALIZED_PROMISE"
+      echo "[DEBUG] Promise found: $(echo "$NORMALIZED_LOG" | grep -oF "$NORMALIZED_PROMISE" || echo "NO")"
+    fi
+
+    if echo "$NORMALIZED_LOG" | grep -qF "$NORMALIZED_PROMISE"; then
+      echo ""
+      echo "══════════════════════════════════════════════"
+      echo "  ✓ Promise detected after $i iterations!"
+      echo "══════════════════════════════════════════════"
+      exit 0
+    fi
   fi
 
   echo ""
