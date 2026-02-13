@@ -122,7 +122,8 @@ Once you have the design document and contributor info, conditionally spawn expe
 1. **Read the design document** from `docs/plans/YYYY-MM-DD-{topic}-design.md`
 2. **Read current counter** from `.prodman/config.yaml` for the contributor (TB or ND)
 3. **Calculate epic ID**: `EP-{CONTRIBUTOR}-{NEXT_NUMBER}` (e.g., `EP-TB-003`)
-4. **Create artifacts directory**: `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/`
+4. **Extract feature slug** from design.md or epic title
+5. **Create artifacts directory**: `.artifacts/{feature-slug}/`
 
 **Track available artifacts:** Start with `[design.md]`
 
@@ -152,7 +153,7 @@ Each agent section below should only execute if its level > 0.
 - Project context (tech stack, existing features)
 
 **Expected output:**
-- `PRD.md` saved to `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/PRD.md`
+- `PRD.md` saved to `.artifacts/{feature-slug}/PRD.md`
 - Contains: problem statement, success metrics, user stories, acceptance criteria, scope, NFRs
 - Detail level scales with pmLevel (1-2 = concise, 3 = standard, 4-5 = comprehensive)
 
@@ -195,7 +196,7 @@ Each agent section below should only execute if its level > 0.
 - Project context (existing architecture, tech stack, database schema)
 
 **Expected output:**
-- `ARCHITECTURE.md` saved to `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/ARCHITECTURE.md`
+- `ARCHITECTURE.md` saved to `.artifacts/{feature-slug}/ARCHITECTURE.md`
 - Contains: ADRs, C4 diagrams, database schema, API specs, NFR coverage, implementation guidance
 - Detail level scales with archLevel (1-2 = core only, 3 = standard, 4-5 = comprehensive)
 
@@ -245,7 +246,7 @@ Each agent section below should only execute if its level > 0.
 - If neither exists: "⚠️ No PRD or Architecture docs. Use design.md as sole source."
 
 **Expected output:**
-- `UI-SPEC.md` saved to `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/UI-SPEC.md`
+- `UI-SPEC.md` saved to `.artifacts/{feature-slug}/UI-SPEC.md`
 - Contains: design tokens, component library, accessibility requirements, responsive design, interaction flows
 - Detail level scales with uiuxLevel (1-2 = essentials, 3 = standard, 4-5 = comprehensive)
 
@@ -544,6 +545,33 @@ Consult them when you need clarification on WHY or HOW something should be imple
 // Insert contextSection into prompt template
 finalPrompt = promptTemplate.replace('{{EXPERT_ARTIFACTS}}', contextSection)
 ```
+
+**Save the prompt:**
+
+Before displaying to user, save the complete prompt to `.artifacts/{feature-slug}/prompt.md`:
+
+```markdown
+# Ralph Loop Prompt for {Feature Name}
+
+> **Epic:** EP-{CONTRIBUTOR}-{NUMBER}
+> **Generated:** {Date}
+
+## Prompt
+
+{The complete finalPrompt content here}
+
+## Metadata
+
+- **Iteration estimate:** ~N iterations
+- **Max iterations:** N
+- **Completion promise:** EP-{CONTRIBUTOR}-{NUMBER} COMPLETE
+- **Artifacts available:** {list of PRD, ARCHITECTURE, UI-SPEC if they exist}
+```
+
+This file serves as:
+- Documentation of what the Ralph loop will do
+- Reference for the user to understand the implementation plan
+- Historical record of the prompt used
 
 **Output format:**
 

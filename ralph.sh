@@ -18,6 +18,7 @@ PROMPT_FILE="PROMPT.md"
 MAX_ITERATIONS=25
 COMPLETION_PROMISE=""
 LOG_FILE=".ralph-output.log"
+PROMPT_DIR=""
 WORK_DIR=""
 
 # --- Help ---
@@ -29,15 +30,22 @@ USAGE:
   ralph.sh [options]
 
 OPTIONS:
-  --dir DIR               Look for PROMPT.md inside DIR (e.g. .artefacts/my-epic)
-  --prompt FILE           Prompt file to use (default: PROMPT.md)
+  --dir DIR               Look for PROMPT.md in DIR (e.g., .artefacts/my-epic)
+  --work-dir DIR          Change to DIR before running loop (where Claude works)
+  --prompt FILE           Prompt file to use (default: PROMPT.md, relative to --dir if specified)
   --max-iterations N      Max iterations before auto-stop (default: 25)
   --promise TEXT          Completion promise — stops when <promise>TEXT</promise> detected
   -h, --help             Show this help
 
 EXAMPLES:
+  # Work in current dir, use PROMPT.md from current dir
   ./ralph.sh --promise "EP-001 COMPLETE" --max-iterations 20
-  ./ralph.sh --prompt PROMPT-auth.md --promise "AUTH DONE" --max-iterations 10
+
+  # Read PROMPT.md from .artefacts/my-epic/, work in current dir
+  ./ralph.sh --dir .artefacts/my-epic --promise "EP-001 COMPLETE" --max-iterations 20
+
+  # Read PROMPT.md from .artefacts/my-epic/, work in specific directory
+  ./ralph.sh --dir .artefacts/my-epic --work-dir /path/to/project --promise "EP-001 COMPLETE" --max-iterations 20
 
 STOPPING:
   Ctrl+C              Stop after current iteration finishes
@@ -52,6 +60,9 @@ while [[ $# -gt 0 ]]; do
   case $1 in
     --dir)
       [[ -z "${2:-}" ]] && echo "Error: --dir requires a directory path" >&2 && exit 1
+      PROMPT_DIR="$2"; shift 2 ;;
+    --work-dir)
+      [[ -z "${2:-}" ]] && echo "Error: --work-dir requires a directory path" >&2 && exit 1
       WORK_DIR="$2"; shift 2 ;;
     --prompt)
       [[ -z "${2:-}" ]] && echo "Error: --prompt requires a file path" >&2 && exit 1
@@ -76,34 +87,45 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# --- Resolve --dir ---
-if [[ -n "$WORK_DIR" ]]; then
-  if [[ ! -d "$WORK_DIR" ]]; then
-    echo "Error: directory '$WORK_DIR' does not exist" >&2
+# --- Resolve --dir (where to find PROMPT.md) ---
+if [[ -n "$PROMPT_DIR" ]]; then
+  if [[ ! -d "$PROMPT_DIR" ]]; then
+    echo "Error: directory '$PROMPT_DIR' does not exist" >&2
     exit 1
   fi
-  PROMPT_FILE="$WORK_DIR/$PROMPT_FILE"
+  PROMPT_FILE="$PROMPT_DIR/$PROMPT_FILE"
 fi
 
-# --- Validate ---
+# --- Validate prompt file exists ---
 if [[ ! -f "$PROMPT_FILE" ]]; then
-  echo "Error: $PROMPT_FILE not found in $(pwd)" >&2
+  echo "Error: $PROMPT_FILE not found" >&2
   echo "Create a PROMPT.md file with your task description, or use --prompt to specify a different file." >&2
   exit 1
+fi
+
+# --- Resolve --work-dir (where Claude should work) ---
+if [[ -n "$WORK_DIR" ]]; then
+  if [[ ! -d "$WORK_DIR" ]]; then
+    echo "Error: work directory '$WORK_DIR' does not exist" >&2
+    exit 1
+  fi
+  echo "Changing to work directory: $WORK_DIR"
+  cd "$WORK_DIR"
 fi
 
 # --- Summary ---
 echo "╔══════════════════════════════════════════════╗"
 echo "║  Ralph Loop                                  ║"
 echo "╠══════════════════════════════════════════════╣"
-echo "║  Prompt:     $PROMPT_FILE"
-echo "║  Iterations: $MAX_ITERATIONS max"
+echo "║  Working dir: $(pwd)"
+echo "║  Prompt:      $PROMPT_FILE"
+echo "║  Iterations:  $MAX_ITERATIONS max"
 if [[ -n "$COMPLETION_PROMISE" ]]; then
-echo "║  Promise:    $COMPLETION_PROMISE"
+echo "║  Promise:     $COMPLETION_PROMISE"
 else
-echo "║  Promise:    (none — runs until max iterations)"
+echo "║  Promise:     (none — runs until max iterations)"
 fi
-echo "║  Stop:       Ctrl+C"
+echo "║  Stop:        Ctrl+C"
 echo "╚══════════════════════════════════════════════╝"
 echo ""
 

@@ -812,7 +812,7 @@ project-root/
 
 **Related Documents:**
 - Design doc: `docs/plans/{date}-{topic}-design.md`
-- PRD: `.prodman/artifacts/{epic-id}-{slug}/PRD.md`
+- PRD: `.artifacts/{feature-slug}/PRD.md`
 
 **Architecture Patterns:**
 - {Link to pattern documentation}
@@ -906,12 +906,12 @@ project-root/
 
 Save your architecture document to:
 ```
-.prodman/artifacts/{epic-id}-{slug}/ARCHITECTURE.md
+.artifacts/{feature-slug}/ARCHITECTURE.md
 ```
 
 Example:
 ```
-.prodman/artifacts/EP-TB-003-user-authentication/ARCHITECTURE.md
+.artifacts/user-authentication/ARCHITECTURE.md
 ```
 
 ### What Happens Next

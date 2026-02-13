@@ -416,12 +416,12 @@ Create `PRD.md` with the following structure:
 
 Save your PRD to:
 ```
-.prodman/artifacts/{epic-id}-{slug}/PRD.md
+.artifacts/{feature-slug}/PRD.md
 ```
 
 Example:
 ```
-.prodman/artifacts/EP-TB-003-user-authentication/PRD.md
+.artifacts/user-authentication/PRD.md
 ```
 
 ### What Happens Next

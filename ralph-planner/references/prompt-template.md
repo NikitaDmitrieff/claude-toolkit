@@ -87,13 +87,13 @@ The `{{EXPERT_ARTIFACTS_SECTION}}` placeholder should be replaced with content b
 ```
 EXPERT ARTIFACTS (reference during implementation):
 {{IF PRD.md exists}}
-- PRD: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/PRD.md}
+- PRD: {absolute path to .artifacts/{feature-slug}/PRD.md}
 {{END}}
 {{IF ARCHITECTURE.md exists}}
-- Architecture: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/ARCHITECTURE.md}
+- Architecture: {absolute path to .artifacts/{feature-slug}/ARCHITECTURE.md}
 {{END}}
 {{IF UI-SPEC.md exists}}
-- UI Spec: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/UI-SPEC.md}
+- UI Spec: {absolute path to .artifacts/{feature-slug}/UI-SPEC.md}
 {{END}}
 
 These artifacts provide deep context on requirements, architecture decisions, and UI design.
@@ -112,9 +112,9 @@ When building the prompt in SKILL.md STEP 4:
 
 ```javascript
 let artifacts = []
-if (pmLevel > 0) artifacts.push(`- PRD: ${absolutePath}/.prodman/artifacts/${epicId}/PRD.md`)
-if (archLevel > 0) artifacts.push(`- Architecture: ${absolutePath}/.prodman/artifacts/${epicId}/ARCHITECTURE.md`)
-if (uiuxLevel > 0) artifacts.push(`- UI Spec: ${absolutePath}/.prodman/artifacts/${epicId}/UI-SPEC.md`)
+if (pmLevel > 0) artifacts.push(`- PRD: ${absolutePath}/.artifacts/${featureSlug}/PRD.md`)
+if (archLevel > 0) artifacts.push(`- Architecture: ${absolutePath}/.artifacts/${featureSlug}/ARCHITECTURE.md`)
+if (uiuxLevel > 0) artifacts.push(`- UI Spec: ${absolutePath}/.artifacts/${featureSlug}/UI-SPEC.md`)
 
 let artifactsSection
 if (artifacts.length > 0) {
@@ -168,9 +168,9 @@ For a 6-task plan creating EP-TB-003 with all agents enabled (without codex revi
 /ralph-wiggum:ralph-loop "Implement user authentication following the spec at /home/tom/projects/connect-coby/.prodman/specs/SPEC-TB-003-user-auth.md.
 
 EXPERT ARTIFACTS (reference during implementation):
-- PRD: /home/tom/projects/connect-coby/.prodman/artifacts/EP-TB-003-user-auth/PRD.md
-- Architecture: /home/tom/projects/connect-coby/.prodman/artifacts/EP-TB-003-user-auth/ARCHITECTURE.md
-- UI Spec: /home/tom/projects/connect-coby/.prodman/artifacts/EP-TB-003-user-auth/UI-SPEC.md
+- PRD: /home/tom/projects/connect-coby/.artifacts/user-auth/PRD.md
+- Architecture: /home/tom/projects/connect-coby/.artifacts/user-auth/ARCHITECTURE.md
+- UI Spec: /home/tom/projects/connect-coby/.artifacts/user-auth/UI-SPEC.md
 
 These artifacts provide deep context on requirements, architecture decisions, and UI design.
 Consult them when you need clarification on WHY or HOW something should be implemented.
@@ -244,8 +244,8 @@ For a 5-task plan creating EP-TB-005 with only PM and Architecture enabled (no U
 /ralph-wiggum:ralph-loop "Implement data export feature following the spec at /home/tom/projects/app/.prodman/specs/SPEC-TB-005-data-export.md.
 
 EXPERT ARTIFACTS (reference during implementation):
-- PRD: /home/tom/projects/app/.prodman/artifacts/EP-TB-005-data-export/PRD.md
-- Architecture: /home/tom/projects/app/.prodman/artifacts/EP-TB-005-data-export/ARCHITECTURE.md
+- PRD: /home/tom/projects/app/.artifacts/data-export/PRD.md
+- Architecture: /home/tom/projects/app/.artifacts/data-export/ARCHITECTURE.md
 
 These artifacts provide deep context on requirements and architecture decisions.
 Consult them when you need clarification on WHY or HOW something should be implemented.
