@@ -15,13 +15,7 @@ The prompt passed to `/ralph-wiggum:ralph-loop` should contain these sections in
 ```
 Implement {feature name} following the spec at {absolute path to SPEC-{CONTRIBUTOR}-{NUMBER}.md}.
 
-EXPERT ARTIFACTS (reference during implementation):
-- PRD: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/PRD.md}
-- Architecture: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/ARCHITECTURE.md}
-- UI Spec: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/UI-SPEC.md}
-
-These artifacts provide deep context on requirements, architecture decisions, and UI design.
-Consult them when you need clarification on WHY or HOW something should be implemented.
+{{EXPERT_ARTIFACTS_SECTION}}
 
 PROGRESS TRACKING:
 - At the START of every iteration, read `progress.txt` at the project root.
@@ -84,6 +78,58 @@ CRITICAL — DO NOT COMPLETE EARLY:
 Output <promise>EP-{CONTRIBUTOR}-{NUMBER} COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
 ```
 
+### Dynamic Sections
+
+The `{{EXPERT_ARTIFACTS_SECTION}}` placeholder should be replaced with content based on which artifacts were created:
+
+**If at least one artifact exists:**
+
+```
+EXPERT ARTIFACTS (reference during implementation):
+{{IF PRD.md exists}}
+- PRD: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/PRD.md}
+{{END}}
+{{IF ARCHITECTURE.md exists}}
+- Architecture: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/ARCHITECTURE.md}
+{{END}}
+{{IF UI-SPEC.md exists}}
+- UI Spec: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/UI-SPEC.md}
+{{END}}
+
+These artifacts provide deep context on requirements, architecture decisions, and UI design.
+Consult them when you need clarification on WHY or HOW something should be implemented.
+```
+
+**If no artifacts exist (all agents disabled):**
+
+```
+Note: No expert artifacts available. Refer to the spec and design document for guidance.
+```
+
+**Construction logic:**
+
+When building the prompt in SKILL.md STEP 4:
+
+```javascript
+let artifacts = []
+if (pmLevel > 0) artifacts.push(`- PRD: ${absolutePath}/.prodman/artifacts/${epicId}/PRD.md`)
+if (archLevel > 0) artifacts.push(`- Architecture: ${absolutePath}/.prodman/artifacts/${epicId}/ARCHITECTURE.md`)
+if (uiuxLevel > 0) artifacts.push(`- UI Spec: ${absolutePath}/.prodman/artifacts/${epicId}/UI-SPEC.md`)
+
+let artifactsSection
+if (artifacts.length > 0) {
+  artifactsSection = `EXPERT ARTIFACTS (reference during implementation):
+${artifacts.join('\n')}
+
+These artifacts provide deep context on requirements, architecture decisions, and UI design.
+Consult them when you need clarification on WHY or HOW something should be implemented.`
+} else {
+  artifactsSection = `Note: No expert artifacts available. Refer to the spec and design document for guidance.`
+}
+
+finalPrompt = promptTemplate.replace('{{EXPERT_ARTIFACTS_SECTION}}', artifactsSection)
+```
+
 ### Codex review insertion
 
 If the user opts in to codex review, insert at `{codex_review_step}`:
@@ -114,9 +160,9 @@ Formula: `(number of tasks × 2.5) + 3 buffer`, rounded up to nearest 5.
 
 If the plan has 13+ tasks, suggest splitting into multiple epics with separate ralph loops.
 
-## Example
+## Example - All Artifacts Available
 
-For a 6-task plan creating EP-TB-003 (without codex review):
+For a 6-task plan creating EP-TB-003 with all agents enabled (without codex review):
 
 ```
 /ralph-wiggum:ralph-loop "Implement user authentication following the spec at /home/tom/projects/connect-coby/.prodman/specs/SPEC-TB-003-user-auth.md.
@@ -186,4 +232,39 @@ CRITICAL — DO NOT COMPLETE EARLY:
 - If ANY task is incomplete, keep working. You have plenty of iterations.
 
 Output <promise>EP-TB-003 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass." --completion-promise "EP-TB-003 COMPLETE" --max-iterations 18
+```
+
+---
+
+## Example - Partial Artifacts
+
+For a 5-task plan creating EP-TB-005 with only PM and Architecture enabled (no UI/UX):
+
+```
+/ralph-wiggum:ralph-loop "Implement data export feature following the spec at /home/tom/projects/app/.prodman/specs/SPEC-TB-005-data-export.md.
+
+EXPERT ARTIFACTS (reference during implementation):
+- PRD: /home/tom/projects/app/.prodman/artifacts/EP-TB-005-data-export/PRD.md
+- Architecture: /home/tom/projects/app/.prodman/artifacts/EP-TB-005-data-export/ARCHITECTURE.md
+
+These artifacts provide deep context on requirements and architecture decisions.
+Consult them when you need clarification on WHY or HOW something should be implemented.
+
+[... rest of prompt template ...]
+" --completion-promise "EP-TB-005 COMPLETE" --max-iterations 15
+```
+
+---
+
+## Example - No Artifacts
+
+For a minimal 3-task utility feature creating EP-TB-007 with no agents (design.md only):
+
+```
+/ralph-wiggum:ralph-loop "Implement date formatter utility following the spec at /home/tom/projects/app/.prodman/specs/SPEC-TB-007-date-formatter.md.
+
+Note: No expert artifacts available. Refer to the spec and design document for guidance.
+
+[... rest of prompt template ...]
+" --completion-promise "EP-TB-007 COMPLETE" --max-iterations 10
 ```
