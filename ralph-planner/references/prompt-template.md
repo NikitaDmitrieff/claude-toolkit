@@ -1,16 +1,20 @@
 # Ralph Loop Prompt Template
 
-## Template
+## Overview
 
-The generated `/ralph-wiggum:ralph-loop` command should follow this structure:
+Ralph-planner creates:
+1. A `PROMPT.md` file in `.artifacts/{feature-slug}/` containing the prompt
+2. A shell command to launch the Ralph loop
 
+## Command Format
+
+```bash
+./ralph.sh --dir .artifacts/{feature-slug} --promise "EP-{CONTRIBUTOR}-{NUMBER} COMPLETE" --max-iterations {N}
 ```
-/ralph-wiggum:ralph-loop "{prompt}" --completion-promise "EP-{CONTRIBUTOR}-{NUMBER} COMPLETE" --max-iterations {N}
-```
 
-## Prompt Structure
+## PROMPT.md Structure
 
-The prompt passed to `/ralph-wiggum:ralph-loop` should contain these sections in order:
+The `PROMPT.md` file saved to `.artifacts/{feature-slug}/` should contain these sections in order:
 
 ```
 Implement {feature name} following the spec at {absolute path to SPEC-{CONTRIBUTOR}-{NUMBER}.md}.
@@ -162,10 +166,16 @@ If the plan has 13+ tasks, suggest splitting into multiple epics with separate r
 
 ## Example - All Artifacts Available
 
-For a 6-task plan creating EP-TB-003 with all agents enabled (without codex review):
+For a 6-task plan creating EP-TB-003 with all agents enabled (without codex review).
 
+**Command:**
+```bash
+./ralph.sh --dir .artifacts/user-auth --promise "EP-TB-003 COMPLETE" --max-iterations 18
 ```
-/ralph-wiggum:ralph-loop "Implement user authentication following the spec at /home/tom/projects/connect-coby/.prodman/specs/SPEC-TB-003-user-auth.md.
+
+**PROMPT.md content** (`.artifacts/user-auth/PROMPT.md`):
+```
+Implement user authentication following the spec at /home/tom/projects/connect-coby/.prodman/specs/SPEC-TB-003-user-auth.md.
 
 EXPERT ARTIFACTS (reference during implementation):
 - PRD: /home/tom/projects/connect-coby/.artifacts/user-auth/PRD.md
@@ -231,17 +241,23 @@ CRITICAL — DO NOT COMPLETE EARLY:
   7. No YAGNI violations
 - If ANY task is incomplete, keep working. You have plenty of iterations.
 
-Output <promise>EP-TB-003 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass." --completion-promise "EP-TB-003 COMPLETE" --max-iterations 18
+Output <promise>EP-TB-003 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
 ```
 
 ---
 
 ## Example - Partial Artifacts
 
-For a 5-task plan creating EP-TB-005 with only PM and Architecture enabled (no UI/UX):
+For a 5-task plan creating EP-TB-005 with only PM and Architecture enabled (no UI/UX).
 
+**Command:**
+```bash
+./ralph.sh --dir .artifacts/data-export --promise "EP-TB-005 COMPLETE" --max-iterations 15
 ```
-/ralph-wiggum:ralph-loop "Implement data export feature following the spec at /home/tom/projects/app/.prodman/specs/SPEC-TB-005-data-export.md.
+
+**PROMPT.md content** (`.artifacts/data-export/PROMPT.md`):
+```
+Implement data export feature following the spec at /home/tom/projects/app/.prodman/specs/SPEC-TB-005-data-export.md.
 
 EXPERT ARTIFACTS (reference during implementation):
 - PRD: /home/tom/projects/app/.artifacts/data-export/PRD.md
@@ -251,20 +267,24 @@ These artifacts provide deep context on requirements and architecture decisions.
 Consult them when you need clarification on WHY or HOW something should be implemented.
 
 [... rest of prompt template ...]
-" --completion-promise "EP-TB-005 COMPLETE" --max-iterations 15
 ```
 
 ---
 
 ## Example - No Artifacts
 
-For a minimal 3-task utility feature creating EP-TB-007 with no agents (design.md only):
+For a minimal 3-task utility feature creating EP-TB-007 with no agents (design.md only).
 
+**Command:**
+```bash
+./ralph.sh --dir .artifacts/date-formatter --promise "EP-TB-007 COMPLETE" --max-iterations 10
 ```
-/ralph-wiggum:ralph-loop "Implement date formatter utility following the spec at /home/tom/projects/app/.prodman/specs/SPEC-TB-007-date-formatter.md.
+
+**PROMPT.md content** (`.artifacts/date-formatter/PROMPT.md`):
+```
+Implement date formatter utility following the spec at /home/tom/projects/app/.prodman/specs/SPEC-TB-007-date-formatter.md.
 
 Note: No expert artifacts available. Refer to the spec and design document for guidance.
 
 [... rest of prompt template ...]
-" --completion-promise "EP-TB-007 COMPLETE" --max-iterations 10
 ```

@@ -548,38 +548,23 @@ finalPrompt = promptTemplate.replace('{{EXPERT_ARTIFACTS}}', contextSection)
 
 **Save the prompt:**
 
-Before displaying to user, save the complete prompt to `.artifacts/{feature-slug}/prompt.md`:
+Before displaying to user, save the complete prompt to `.artifacts/{feature-slug}/PROMPT.md`:
 
-```markdown
-# Ralph Loop Prompt for {Feature Name}
+Write the finalPrompt content directly (without markdown wrapper):
 
-> **Epic:** EP-{CONTRIBUTOR}-{NUMBER}
-> **Generated:** {Date}
-
-## Prompt
-
-{The complete finalPrompt content here}
-
-## Metadata
-
-- **Iteration estimate:** ~N iterations
-- **Max iterations:** N
-- **Completion promise:** EP-{CONTRIBUTOR}-{NUMBER} COMPLETE
-- **Artifacts available:** {list of PRD, ARCHITECTURE, UI-SPEC if they exist}
+```
+{The complete finalPrompt content - the actual prompt that will be piped to Claude}
 ```
 
-This file serves as:
-- Documentation of what the Ralph loop will do
-- Reference for the user to understand the implementation plan
-- Historical record of the prompt used
+This file is used by ralph.sh to execute the implementation loop.
 
 **Output format:**
 
 ~~~
 Here's your Ralph loop command (~N iterations estimated for X tasks):
 
-```
-/ralph-wiggum:ralph-loop "..." --completion-promise "EP-{CONTRIBUTOR}-{NUMBER} COMPLETE" --max-iterations N
+```bash
+./ralph.sh --dir .artifacts/{feature-slug} --promise "EP-{CONTRIBUTOR}-{NUMBER} COMPLETE" --max-iterations N
 ```
 
 **What it will do:**
@@ -592,8 +577,14 @@ Here's your Ralph loop command (~N iterations estimated for X tasks):
 - {if UI-SPEC: "✓ UI/UX specification (UI-SPEC.md)"}
 - {if none: "⚠️ No expert artifacts (design.md only)"}
 
-**To launch:** Copy the command above and paste it.
-**To cancel mid-loop:** `/ralph-wiggum:cancel-ralph`
+**Files created:**
+- Epic: `.prodman/epics/EP-{CONTRIBUTOR}-{NUMBER}-{slug}.yaml`
+- Spec: `.prodman/specs/SPEC-{CONTRIBUTOR}-{NUMBER}-{slug}.md`
+- Prompt: `.artifacts/{feature-slug}/PROMPT.md`
+- Artifacts: `.artifacts/{feature-slug}/` (PRD, ARCHITECTURE, UI-SPEC if created)
+
+**To launch:** Copy the command above and paste it in your terminal.
+**To stop:** Press Ctrl+C
 ~~~
 
 ## Key Principles
