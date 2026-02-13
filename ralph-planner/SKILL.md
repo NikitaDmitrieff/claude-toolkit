@@ -461,9 +461,9 @@ contributors:
 
 ---
 
-### STEP 4: Generate Ralph Loop Command
+### STEP 4: Generate Ralph Loop Command (Dynamic)
 
-Generate a `/ralph-wiggum:ralph-loop` command for the user to copy-paste.
+Generate a `/ralph-wiggum:ralph-loop` command that references only the artifacts that were created.
 
 **Iteration estimate:**
 - Count tasks in spec
@@ -475,7 +475,75 @@ Generate a `/ralph-wiggum:ralph-loop` command for the user to copy-paste.
 
 **Codex review:** Ask user if they want codex review gate. If yes, add `WITH CODEX REVIEW` to prompt.
 
-**Prompt structure:** See [references/prompt-template.md](references/prompt-template.md) for exact template.
+**Prompt structure (adaptive):**
+
+Build the prompt dynamically based on which artifacts exist.
+
+**Base template:** See [references/prompt-template.md](references/prompt-template.md) for full template.
+
+**Adaptive context section:**
+
+The "EXPERT ARTIFACTS" section should only reference files that exist:
+
+```
+EXPERT ARTIFACTS (reference during implementation):
+{{IF PRD.md exists (pmLevel > 0)}}
+- PRD: {absolute path to .prodman/artifacts/EP-{ID}/PRD.md}
+{{END}}
+{{IF ARCHITECTURE.md exists (archLevel > 0)}}
+- Architecture: {absolute path to .prodman/artifacts/EP-{ID}/ARCHITECTURE.md}
+{{END}}
+{{IF UI-SPEC.md exists (uiuxLevel > 0)}}
+- UI Spec: {absolute path to .prodman/artifacts/EP-{ID}/UI-SPEC.md}
+{{END}}
+
+{{IF at least one artifact exists}}
+These artifacts provide deep context on requirements, architecture decisions, and UI design.
+Consult them when you need clarification on WHY or HOW something should be implemented.
+{{ELSE}}
+Note: No expert artifacts available. Refer to the spec and design document for guidance.
+{{END}}
+```
+
+**Example scenarios:**
+
+| Config | Context section |
+|--------|----------------|
+| All agents enabled (5,5,5) | All 3 artifacts referenced (current behavior) |
+| PM + Arch only (pm:4, arch:3, uiux:0) | Only PRD and Architecture referenced |
+| PM only (pm:3, arch:0, uiux:0) | Only PRD referenced |
+| No agents (pm:0, arch:0, uiux:0) | "No expert artifacts available" note |
+
+**Implementation in prompt construction:**
+
+```javascript
+// Build context section dynamically
+let expertArtifacts = []
+
+if (pmLevel > 0) {
+  expertArtifacts.push(`- PRD: ${absolutePath}/.prodman/artifacts/${epicId}/PRD.md`)
+}
+if (archLevel > 0) {
+  expertArtifacts.push(`- Architecture: ${absolutePath}/.prodman/artifacts/${epicId}/ARCHITECTURE.md`)
+}
+if (uiuxLevel > 0) {
+  expertArtifacts.push(`- UI Spec: ${absolutePath}/.prodman/artifacts/${epicId}/UI-SPEC.md`)
+}
+
+let contextSection
+if (expertArtifacts.length > 0) {
+  contextSection = `EXPERT ARTIFACTS (reference during implementation):
+${expertArtifacts.join('\n')}
+
+These artifacts provide deep context on requirements, architecture decisions, and UI design.
+Consult them when you need clarification on WHY or HOW something should be implemented.`
+} else {
+  contextSection = `Note: No expert artifacts available. Refer to the spec and design document for guidance.`
+}
+
+// Insert contextSection into prompt template
+finalPrompt = promptTemplate.replace('{{EXPERT_ARTIFACTS}}', contextSection)
+```
 
 **Output format:**
 
@@ -488,6 +556,13 @@ Here's your Ralph loop command (~N iterations estimated for X tasks):
 
 **What it will do:**
 - [1-line summary per major task group]
+
+**Expert artifacts available:**
+{List which artifacts were created and will be available during implementation}
+- {if PRD: "✓ Product requirements (PRD.md)"}
+- {if ARCH: "✓ Architecture document (ARCHITECTURE.md)"}
+- {if UI-SPEC: "✓ UI/UX specification (UI-SPEC.md)"}
+- {if none: "⚠️ No expert artifacts (design.md only)"}
 
 **To launch:** Copy the command above and paste it.
 **To cancel mid-loop:** `/ralph-wiggum:cancel-ralph`
