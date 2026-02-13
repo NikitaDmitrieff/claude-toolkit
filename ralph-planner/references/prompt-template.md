@@ -5,7 +5,7 @@
 The generated `/ralph-wiggum:ralph-loop` command should follow this structure:
 
 ```
-/ralph-wiggum:ralph-loop "{prompt}" --completion-promise "EP-{XXX} COMPLETE" --max-iterations {N}
+/ralph-wiggum:ralph-loop "{prompt}" --completion-promise "EP-{CONTRIBUTOR}-{NUMBER} COMPLETE" --max-iterations {N}
 ```
 
 ## Prompt Structure
@@ -13,7 +13,15 @@ The generated `/ralph-wiggum:ralph-loop` command should follow this structure:
 The prompt passed to `/ralph-wiggum:ralph-loop` should contain these sections in order:
 
 ```
-Implement {feature name} following the spec at {absolute path to SPEC-XXX.md}.
+Implement {feature name} following the spec at {absolute path to SPEC-{CONTRIBUTOR}-{NUMBER}.md}.
+
+EXPERT ARTIFACTS (reference during implementation):
+- PRD: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/PRD.md}
+- Architecture: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/ARCHITECTURE.md}
+- UI Spec: {absolute path to .prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/UI-SPEC.md}
+
+These artifacts provide deep context on requirements, architecture decisions, and UI design.
+Consult them when you need clarification on WHY or HOW something should be implemented.
 
 PROGRESS TRACKING:
 - At the START of every iteration, read `progress.txt` at the project root.
@@ -58,7 +66,7 @@ BEST PRACTICES (after ALL implementation tasks are done):
 RULES:
 - Follow the project's CLAUDE.md and AGENTS.md conventions.
 - Do NOT add features beyond what the spec describes.
-- Mark EP-{XXX} status as 'complete' in .prodman/epics/ when done.
+- Mark EP-{CONTRIBUTOR}-{NUMBER} status as 'complete' in .prodman/epics/ when done.
 
 CRITICAL — DO NOT COMPLETE EARLY:
 - You have multiple tasks to implement. Do NOT output the completion promise until ALL of them are done.
@@ -73,7 +81,7 @@ CRITICAL — DO NOT COMPLETE EARLY:
   {codex_review_check}
 - If ANY task is incomplete, keep working. You have plenty of iterations.
 
-Output <promise>EP-{XXX} COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
+Output <promise>EP-{CONTRIBUTOR}-{NUMBER} COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass.
 ```
 
 ### Codex review insertion
@@ -108,10 +116,18 @@ If the plan has 13+ tasks, suggest splitting into multiple epics with separate r
 
 ## Example
 
-For a 6-task plan creating EP-002 (without codex review):
+For a 6-task plan creating EP-TB-003 (without codex review):
 
 ```
-/ralph-wiggum:ralph-loop "Implement Quick Start lite space following the spec at /Users/nikitadmitrieff/Projects/coby/mvp-early-bk/coby-v2/.prodman/specs/SPEC-002-quick-start.md.
+/ralph-wiggum:ralph-loop "Implement user authentication following the spec at /home/tom/projects/connect-coby/.prodman/specs/SPEC-TB-003-user-auth.md.
+
+EXPERT ARTIFACTS (reference during implementation):
+- PRD: /home/tom/projects/connect-coby/.prodman/artifacts/EP-TB-003-user-auth/PRD.md
+- Architecture: /home/tom/projects/connect-coby/.prodman/artifacts/EP-TB-003-user-auth/ARCHITECTURE.md
+- UI Spec: /home/tom/projects/connect-coby/.prodman/artifacts/EP-TB-003-user-auth/UI-SPEC.md
+
+These artifacts provide deep context on requirements, architecture decisions, and UI design.
+Consult them when you need clarification on WHY or HOW something should be implemented.
 
 PROGRESS TRACKING:
 - At the START of every iteration, read progress.txt at the project root.
@@ -142,8 +158,8 @@ WORKFLOW:
 BEST PRACTICES (after ALL implementation tasks are done):
 1. Run /code-simplifier to reduce unnecessary complexity in the code you wrote.
 2. Create review artefacts:
-   - .artefacts/quick-start/TESTING.md — Manual testing guide with exact steps, expected results, and edge cases.
-   - .artefacts/quick-start/CHANGELOG.md — What changed: summary, files modified, breaking changes.
+   - .artefacts/user-auth/TESTING.md — Manual testing guide with exact steps, expected results, and edge cases.
+   - .artefacts/user-auth/CHANGELOG.md — What changed: summary, files modified, breaking changes.
 3. Update CLAUDE.md with learnings from this session:
    - Review the implementation for patterns, commands, or gotchas worth documenting
    - Draft concise additions (one-line format: `<command>` - `<brief description>`)
@@ -155,7 +171,7 @@ BEST PRACTICES (after ALL implementation tasks are done):
 RULES:
 - Follow the project's CLAUDE.md and AGENTS.md conventions.
 - Do NOT add features beyond what the spec describes.
-- Mark EP-002 status as complete in .prodman/epics/ when done.
+- Mark EP-TB-003 status as complete in .prodman/epics/ when done.
 
 CRITICAL — DO NOT COMPLETE EARLY:
 - You have 6 tasks to implement. Do NOT output the completion promise until ALL of them are done.
@@ -163,11 +179,11 @@ CRITICAL — DO NOT COMPLETE EARLY:
   1. Every task in the spec is implemented (check them off one by one)
   2. progress.txt shows ALL tasks as complete
   3. /code-simplifier has been run
-  4. Review artefacts are created in .artefacts/quick-start/
+  4. Review artefacts are created in .artefacts/user-auth/
   5. CLAUDE.md has been updated with session learnings (if applicable)
   6. Code follows CLAUDE.md and AGENTS.md conventions
   7. No YAGNI violations
 - If ANY task is incomplete, keep working. You have plenty of iterations.
 
-Output <promise>EP-002 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass." --completion-promise "EP-002 COMPLETE" --max-iterations 18
+Output <promise>EP-TB-003 COMPLETE</promise> ONLY when every single task is implemented, best practices are done, and all checks above pass." --completion-promise "EP-TB-003 COMPLETE" --max-iterations 18
 ```
