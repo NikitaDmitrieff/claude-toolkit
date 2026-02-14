@@ -32,6 +32,12 @@ Run both:
 1. `/claude-md-improver` — audit and improve CLAUDE.md quality
 2. `/claude-md-management:revise-claude-md` — update CLAUDE.md with learnings from this session
 
+**Subdirectory CLAUDE.md convention:** This project uses auto-loaded subdirectory CLAUDE.md files for progressive disclosure. When updating docs:
+- Root `CLAUDE.md` — project-wide context only (stack, conventions, env vars). No file-by-file listings.
+- `backend/CLAUDE.md` — backend setup, error handling, database conventions
+- `backend/app/sdk/CLAUDE.md` — SDK architecture, SSE events, MCP tools, known bugs
+- Update the relevant subdirectory file, not root, for domain-specific changes.
+
 ## 4. Convention Compliance
 
 Verify the work follows:
@@ -67,7 +73,7 @@ BEST PRACTICES (after ALL implementation tasks are done):
 2. Create review artefacts:
    - .artefacts/{feature-slug}/TESTING.md — Manual testing guide with exact steps, expected results, and edge cases.
    - .artefacts/{feature-slug}/CHANGELOG.md — What changed: summary, files modified, breaking changes.
-3. Run /claude-md-improver and /claude-md-management:revise-claude-md to keep CLAUDE.md current.
+3. Run /claude-md-improver and /claude-md-management:revise-claude-md to keep CLAUDE.md current. Update the relevant subdirectory CLAUDE.md for domain-specific changes (backend/ or backend/app/sdk/).
 4. Verify all code follows CLAUDE.md and AGENTS.md conventions.
 5. Check for YAGNI violations — no features beyond what the spec describes.
 {codex_review_step}
