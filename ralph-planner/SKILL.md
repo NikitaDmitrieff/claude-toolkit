@@ -123,7 +123,7 @@ Once you have the design document and contributor info, conditionally spawn expe
 2. **Read current counter** from `.prodman/config.yaml` for the contributor (TB or ND)
 3. **Calculate epic ID**: `EP-{CONTRIBUTOR}-{NEXT_NUMBER}` (e.g., `EP-TB-003`)
 4. **Extract feature slug** from design.md or epic title
-5. **Create artifacts directory**: `.artifacts/{feature-slug}/`
+5. **Create artifacts directory**: `.artefacts/{feature-slug}/`
 
 **Track available artifacts:** Start with `[design.md]`
 
@@ -153,7 +153,7 @@ Each agent section below should only execute if its level > 0.
 - Project context (tech stack, existing features)
 
 **Expected output:**
-- `PRD.md` saved to `.artifacts/{feature-slug}/PRD.md`
+- `PRD.md` saved to `.artefacts/{feature-slug}/PRD.md`
 - Contains: problem statement, success metrics, user stories, acceptance criteria, scope, NFRs
 - Detail level scales with pmLevel (1-2 = concise, 3 = standard, 4-5 = comprehensive)
 
@@ -164,7 +164,7 @@ Each agent section below should only execute if its level > 0.
 
 **After completion:**
 ```
-✓ PRD created at .prodman/artifacts/{epic}/PRD.md
+✓ PRD created at .artefacts/{feature-slug}/PRD.md
 ```
 
 **Update available artifacts:** `[design.md, PRD.md]`
@@ -196,7 +196,7 @@ Each agent section below should only execute if its level > 0.
 - Project context (existing architecture, tech stack, database schema)
 
 **Expected output:**
-- `ARCHITECTURE.md` saved to `.artifacts/{feature-slug}/ARCHITECTURE.md`
+- `ARCHITECTURE.md` saved to `.artefacts/{feature-slug}/ARCHITECTURE.md`
 - Contains: ADRs, C4 diagrams, database schema, API specs, NFR coverage, implementation guidance
 - Detail level scales with archLevel (1-2 = core only, 3 = standard, 4-5 = comprehensive)
 
@@ -209,7 +209,7 @@ Each agent section below should only execute if its level > 0.
 
 **After completion:**
 ```
-✓ Architecture document created at .prodman/artifacts/{epic}/ARCHITECTURE.md
+✓ Architecture document created at .artefacts/{feature-slug}/ARCHITECTURE.md
 ```
 
 **Update available artifacts:** `[design.md, {PRD.md if exists}, ARCHITECTURE.md]`
@@ -246,7 +246,7 @@ Each agent section below should only execute if its level > 0.
 - If neither exists: "⚠️ No PRD or Architecture docs. Use design.md as sole source."
 
 **Expected output:**
-- `UI-SPEC.md` saved to `.artifacts/{feature-slug}/UI-SPEC.md`
+- `UI-SPEC.md` saved to `.artefacts/{feature-slug}/UI-SPEC.md`
 - Contains: design tokens, component library, accessibility requirements, responsive design, interaction flows
 - Detail level scales with uiuxLevel (1-2 = essentials, 3 = standard, 4-5 = comprehensive)
 
@@ -258,7 +258,7 @@ Each agent section below should only execute if its level > 0.
 
 **After completion:**
 ```
-✓ UI specification created at .prodman/artifacts/{epic}/UI-SPEC.md
+✓ UI specification created at .artefacts/{feature-slug}/UI-SPEC.md
 ```
 
 **Update available artifacts:** `[design.md, {PRD.md if exists}, {ARCHITECTURE.md if exists}, UI-SPEC.md]`
@@ -489,13 +489,13 @@ The "EXPERT ARTIFACTS" section should only reference files that exist:
 ```
 EXPERT ARTIFACTS (reference during implementation):
 {{IF PRD.md exists (pmLevel > 0)}}
-- PRD: {absolute path to .prodman/artifacts/EP-{ID}/PRD.md}
+- PRD: {absolute path to .artefacts/{feature-slug}/PRD.md}
 {{END}}
 {{IF ARCHITECTURE.md exists (archLevel > 0)}}
-- Architecture: {absolute path to .prodman/artifacts/EP-{ID}/ARCHITECTURE.md}
+- Architecture: {absolute path to .artefacts/{feature-slug}/ARCHITECTURE.md}
 {{END}}
 {{IF UI-SPEC.md exists (uiuxLevel > 0)}}
-- UI Spec: {absolute path to .prodman/artifacts/EP-{ID}/UI-SPEC.md}
+- UI Spec: {absolute path to .artefacts/{feature-slug}/UI-SPEC.md}
 {{END}}
 
 {{IF at least one artifact exists}}
@@ -522,13 +522,13 @@ Note: No expert artifacts available. Refer to the spec and design document for g
 let expertArtifacts = []
 
 if (pmLevel > 0) {
-  expertArtifacts.push(`- PRD: ${absolutePath}/.prodman/artifacts/${epicId}/PRD.md`)
+  expertArtifacts.push(`- PRD: ${absolutePath}/.artefacts/${featureSlug}/PRD.md`)
 }
 if (archLevel > 0) {
-  expertArtifacts.push(`- Architecture: ${absolutePath}/.prodman/artifacts/${epicId}/ARCHITECTURE.md`)
+  expertArtifacts.push(`- Architecture: ${absolutePath}/.artefacts/${featureSlug}/ARCHITECTURE.md`)
 }
 if (uiuxLevel > 0) {
-  expertArtifacts.push(`- UI Spec: ${absolutePath}/.prodman/artifacts/${epicId}/UI-SPEC.md`)
+  expertArtifacts.push(`- UI Spec: ${absolutePath}/.artefacts/${featureSlug}/UI-SPEC.md`)
 }
 
 let contextSection
@@ -548,7 +548,7 @@ finalPrompt = promptTemplate.replace('{{EXPERT_ARTIFACTS}}', contextSection)
 
 **Save the prompt:**
 
-Before displaying to user, save the complete prompt to `.artifacts/{feature-slug}/PROMPT.md`:
+Before displaying to user, save the complete prompt to `.artefacts/{feature-slug}/PROMPT.md`:
 
 Write the finalPrompt content directly (without markdown wrapper):
 
@@ -564,7 +564,7 @@ This file is used by ralph.sh to execute the implementation loop.
 Here's your Ralph loop command (~N iterations estimated for X tasks):
 
 ```bash
-./ralph.sh --dir .artifacts/{feature-slug} --promise "EP-{CONTRIBUTOR}-{NUMBER} COMPLETE" --max-iterations N
+./ralph.sh --dir .artefacts/{feature-slug} --promise "EP-{CONTRIBUTOR}-{NUMBER} COMPLETE" --max-iterations N
 ```
 
 **What it will do:**
@@ -580,8 +580,8 @@ Here's your Ralph loop command (~N iterations estimated for X tasks):
 **Files created:**
 - Epic: `.prodman/epics/EP-{CONTRIBUTOR}-{NUMBER}-{slug}.yaml`
 - Spec: `.prodman/specs/SPEC-{CONTRIBUTOR}-{NUMBER}-{slug}.md`
-- Prompt: `.artifacts/{feature-slug}/PROMPT.md`
-- Artifacts: `.artifacts/{feature-slug}/` (PRD, ARCHITECTURE, UI-SPEC if created)
+- Prompt: `.artefacts/{feature-slug}/PROMPT.md`
+- Artifacts: `.artefacts/{feature-slug}/` (PRD, ARCHITECTURE, UI-SPEC if created)
 
 **To launch:** Copy the command above and paste it in your terminal.
 **To stop:** Press Ctrl+C

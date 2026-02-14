@@ -3,18 +3,18 @@
 ## Overview
 
 Ralph-planner creates:
-1. A `PROMPT.md` file in `.artifacts/{feature-slug}/` containing the prompt
+1. A `PROMPT.md` file in `.artefacts/{feature-slug}/` containing the prompt
 2. A shell command to launch the Ralph loop
 
 ## Command Format
 
 ```bash
-./ralph.sh --dir .artifacts/{feature-slug} --promise "EP-{CONTRIBUTOR}-{NUMBER} COMPLETE" --max-iterations {N}
+./ralph.sh --dir .artefacts/{feature-slug} --promise "EP-{CONTRIBUTOR}-{NUMBER} COMPLETE" --max-iterations {N}
 ```
 
 ## PROMPT.md Structure
 
-The `PROMPT.md` file saved to `.artifacts/{feature-slug}/` should contain these sections in order:
+The `PROMPT.md` file saved to `.artefacts/{feature-slug}/` should contain these sections in order:
 
 ```
 Implement {feature name} following the spec at {absolute path to SPEC-{CONTRIBUTOR}-{NUMBER}.md}.
@@ -22,9 +22,9 @@ Implement {feature name} following the spec at {absolute path to SPEC-{CONTRIBUT
 {{EXPERT_ARTIFACTS_SECTION}}
 
 PROGRESS TRACKING:
-- At the START of every iteration, read `progress.txt` at the project root.
+- At the START of every iteration, read `.artefacts/{feature-slug}/progress.txt`.
 - It contains the list of completed tasks and current state from previous iterations.
-- After completing each task, UPDATE `progress.txt` with:
+- After completing each task, UPDATE `.artefacts/{feature-slug}/progress.txt` with:
   - Which task you just finished (task number + name)
   - Brief summary of what was done
   - Any issues encountered
@@ -33,19 +33,19 @@ PROGRESS TRACKING:
 
 PACING — ONE TASK PER ITERATION (MANDATORY):
 - Each iteration, implement EXACTLY ONE task from the spec. No more.
-- After completing that single task: commit, update progress.txt, then STOP.
+- After completing that single task: commit, update .artefacts/{feature-slug}/progress.txt, then STOP.
 - Do NOT look ahead to the next task. Do NOT "while I'm here" other tasks.
-- The next iteration will pick up where you left off via progress.txt.
+- The next iteration will pick up where you left off via .artefacts/{feature-slug}/progress.txt.
 - Exception: the FINAL iteration handles best practices + completion promise.
 
 WORKFLOW:
 1. Read the spec file first.
-2. Read `progress.txt` to see what's already done from previous iterations.
+2. Read `.artefacts/{feature-slug}/progress.txt` to see what's already done from previous iterations.
 3. Identify the NEXT SINGLE incomplete task (lowest numbered unfinished task).
 4. Implement ONLY that one task, then commit.
-5. Update `progress.txt` with what you just finished and what comes next.
+5. Update `.artefacts/{feature-slug}/progress.txt` with what you just finished and what comes next.
 6. STOP. Do not continue to the next task — let the loop iterate.
-7. Only after ALL tasks show complete in progress.txt, run best practices (see below).
+7. Only after ALL tasks show complete in .artefacts/{feature-slug}/progress.txt, run best practices (see below).
 
 BEST PRACTICES (after ALL implementation tasks are done):
 1. Run /code-simplifier to reduce unnecessary complexity in the code you wrote.
@@ -70,7 +70,7 @@ CRITICAL — DO NOT COMPLETE EARLY:
 - You have multiple tasks to implement. Do NOT output the completion promise until ALL of them are done.
 - Before outputting <promise>, you MUST verify:
   1. Every task in the spec is implemented (check them off one by one)
-  2. `progress.txt` shows ALL tasks as complete
+  2. `.artefacts/{feature-slug}/progress.txt` shows ALL tasks as complete
   3. /code-simplifier has been run
   4. Review artefacts are created in .artefacts/{feature-slug}/
   5. CLAUDE.md has been updated with session learnings (if applicable)
@@ -91,13 +91,13 @@ The `{{EXPERT_ARTIFACTS_SECTION}}` placeholder should be replaced with content b
 ```
 EXPERT ARTIFACTS (reference during implementation):
 {{IF PRD.md exists}}
-- PRD: {absolute path to .artifacts/{feature-slug}/PRD.md}
+- PRD: {absolute path to .artefacts/{feature-slug}/PRD.md}
 {{END}}
 {{IF ARCHITECTURE.md exists}}
-- Architecture: {absolute path to .artifacts/{feature-slug}/ARCHITECTURE.md}
+- Architecture: {absolute path to .artefacts/{feature-slug}/ARCHITECTURE.md}
 {{END}}
 {{IF UI-SPEC.md exists}}
-- UI Spec: {absolute path to .artifacts/{feature-slug}/UI-SPEC.md}
+- UI Spec: {absolute path to .artefacts/{feature-slug}/UI-SPEC.md}
 {{END}}
 
 These artifacts provide deep context on requirements, architecture decisions, and UI design.
@@ -116,9 +116,9 @@ When building the prompt in SKILL.md STEP 4:
 
 ```javascript
 let artifacts = []
-if (pmLevel > 0) artifacts.push(`- PRD: ${absolutePath}/.artifacts/${featureSlug}/PRD.md`)
-if (archLevel > 0) artifacts.push(`- Architecture: ${absolutePath}/.artifacts/${featureSlug}/ARCHITECTURE.md`)
-if (uiuxLevel > 0) artifacts.push(`- UI Spec: ${absolutePath}/.artifacts/${featureSlug}/UI-SPEC.md`)
+if (pmLevel > 0) artifacts.push(`- PRD: ${absolutePath}/.artefacts/${featureSlug}/PRD.md`)
+if (archLevel > 0) artifacts.push(`- Architecture: ${absolutePath}/.artefacts/${featureSlug}/ARCHITECTURE.md`)
+if (uiuxLevel > 0) artifacts.push(`- UI Spec: ${absolutePath}/.artefacts/${featureSlug}/UI-SPEC.md`)
 
 let artifactsSection
 if (artifacts.length > 0) {
@@ -170,25 +170,25 @@ For a 6-task plan creating EP-TB-003 with all agents enabled (without codex revi
 
 **Command:**
 ```bash
-./ralph.sh --dir .artifacts/user-auth --promise "EP-TB-003 COMPLETE" --max-iterations 18
+./ralph.sh --dir .artefacts/user-auth --promise "EP-TB-003 COMPLETE" --max-iterations 18
 ```
 
-**PROMPT.md content** (`.artifacts/user-auth/PROMPT.md`):
+**PROMPT.md content** (`.artefacts/user-auth/PROMPT.md`):
 ```
 Implement user authentication following the spec at /home/tom/projects/connect-coby/.prodman/specs/SPEC-TB-003-user-auth.md.
 
 EXPERT ARTIFACTS (reference during implementation):
-- PRD: /home/tom/projects/connect-coby/.artifacts/user-auth/PRD.md
-- Architecture: /home/tom/projects/connect-coby/.artifacts/user-auth/ARCHITECTURE.md
-- UI Spec: /home/tom/projects/connect-coby/.artifacts/user-auth/UI-SPEC.md
+- PRD: /home/tom/projects/connect-coby/.artefacts/user-auth/PRD.md
+- Architecture: /home/tom/projects/connect-coby/.artefacts/user-auth/ARCHITECTURE.md
+- UI Spec: /home/tom/projects/connect-coby/.artefacts/user-auth/UI-SPEC.md
 
 These artifacts provide deep context on requirements, architecture decisions, and UI design.
 Consult them when you need clarification on WHY or HOW something should be implemented.
 
 PROGRESS TRACKING:
-- At the START of every iteration, read progress.txt at the project root.
+- At the START of every iteration, read .artefacts/user-auth/progress.txt.
 - It contains the list of completed tasks and current state from previous iterations.
-- After completing each task, UPDATE progress.txt with:
+- After completing each task, UPDATE .artefacts/user-auth/progress.txt with:
   - Which task you just finished (task number + name)
   - Brief summary of what was done
   - Any issues encountered
@@ -197,19 +197,19 @@ PROGRESS TRACKING:
 
 PACING — ONE TASK PER ITERATION (MANDATORY):
 - Each iteration, implement EXACTLY ONE task from the spec. No more.
-- After completing that single task: commit, update progress.txt, then STOP.
+- After completing that single task: commit, update .artefacts/user-auth/progress.txt, then STOP.
 - Do NOT look ahead to the next task. Do NOT while-I'm-here other tasks.
-- The next iteration will pick up where you left off via progress.txt.
+- The next iteration will pick up where you left off via .artefacts/user-auth/progress.txt.
 - Exception: the FINAL iteration handles best practices + completion promise.
 
 WORKFLOW:
 1. Read the spec file first.
-2. Read progress.txt to see what is already done from previous iterations.
+2. Read .artefacts/user-auth/progress.txt to see what is already done from previous iterations.
 3. Identify the NEXT SINGLE incomplete task (lowest numbered unfinished task).
 4. Implement ONLY that one task, then commit.
-5. Update progress.txt with what you just finished and what comes next.
+5. Update .artefacts/user-auth/progress.txt with what you just finished and what comes next.
 6. STOP. Do not continue to the next task — let the loop iterate.
-7. Only after ALL tasks show complete in progress.txt, run best practices (see below).
+7. Only after ALL tasks show complete in .artefacts/user-auth/progress.txt, run best practices (see below).
 
 BEST PRACTICES (after ALL implementation tasks are done):
 1. Run /code-simplifier to reduce unnecessary complexity in the code you wrote.
@@ -233,7 +233,7 @@ CRITICAL — DO NOT COMPLETE EARLY:
 - You have 6 tasks to implement. Do NOT output the completion promise until ALL of them are done.
 - Before outputting the promise, you MUST verify:
   1. Every task in the spec is implemented (check them off one by one)
-  2. progress.txt shows ALL tasks as complete
+  2. .artefacts/user-auth/progress.txt shows ALL tasks as complete
   3. /code-simplifier has been run
   4. Review artefacts are created in .artefacts/user-auth/
   5. CLAUDE.md has been updated with session learnings (if applicable)
@@ -252,16 +252,16 @@ For a 5-task plan creating EP-TB-005 with only PM and Architecture enabled (no U
 
 **Command:**
 ```bash
-./ralph.sh --dir .artifacts/data-export --promise "EP-TB-005 COMPLETE" --max-iterations 15
+./ralph.sh --dir .artefacts/data-export --promise "EP-TB-005 COMPLETE" --max-iterations 15
 ```
 
-**PROMPT.md content** (`.artifacts/data-export/PROMPT.md`):
+**PROMPT.md content** (`.artefacts/data-export/PROMPT.md`):
 ```
 Implement data export feature following the spec at /home/tom/projects/app/.prodman/specs/SPEC-TB-005-data-export.md.
 
 EXPERT ARTIFACTS (reference during implementation):
-- PRD: /home/tom/projects/app/.artifacts/data-export/PRD.md
-- Architecture: /home/tom/projects/app/.artifacts/data-export/ARCHITECTURE.md
+- PRD: /home/tom/projects/app/.artefacts/data-export/PRD.md
+- Architecture: /home/tom/projects/app/.artefacts/data-export/ARCHITECTURE.md
 
 These artifacts provide deep context on requirements and architecture decisions.
 Consult them when you need clarification on WHY or HOW something should be implemented.
@@ -277,10 +277,10 @@ For a minimal 3-task utility feature creating EP-TB-007 with no agents (design.m
 
 **Command:**
 ```bash
-./ralph.sh --dir .artifacts/date-formatter --promise "EP-TB-007 COMPLETE" --max-iterations 10
+./ralph.sh --dir .artefacts/date-formatter --promise "EP-TB-007 COMPLETE" --max-iterations 10
 ```
 
-**PROMPT.md content** (`.artifacts/date-formatter/PROMPT.md`):
+**PROMPT.md content** (`.artefacts/date-formatter/PROMPT.md`):
 ```
 Implement date formatter utility following the spec at /home/tom/projects/app/.prodman/specs/SPEC-TB-007-date-formatter.md.
 

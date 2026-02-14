@@ -11,7 +11,7 @@ Ralph-planner v2 uses **3 expert subagents** to create comprehensive specificati
 2. **Architecture Expert** → ARCHITECTURE.md
 3. **UI/UX Expert** → UI-SPEC.md
 
-These artifacts are stored in `.prodman/artifacts/` and provide deep context for implementation.
+These artifacts are stored in `.artefacts/{feature-slug}/` and provide deep context for implementation.
 
 ---
 
@@ -25,21 +25,28 @@ These artifacts are stored in `.prodman/artifacts/` and provide deep context for
 │   ├── EP-TB-002-feature-b.yaml
 │   ├── EP-ND-001-feature-c.yaml
 │   └── ...
-├── specs/
-│   ├── SPEC-TB-001-feature-a.md  # Ultra-detailed implementation tasks
-│   ├── SPEC-TB-002-feature-b.md
-│   ├── SPEC-ND-001-feature-c.md
-│   └── ...
-└── artifacts/                     # ⭐ NEW IN V2
-    ├── EP-TB-001-feature-a/
-    │   ├── PRD.md                 # Product requirements (from PM expert)
-    │   ├── ARCHITECTURE.md        # Architecture design (from Arch expert)
-    │   └── UI-SPEC.md             # UI specification (from UI expert)
-    ├── EP-TB-002-feature-b/
-    │   ├── PRD.md
-    │   ├── ARCHITECTURE.md
-    │   └── UI-SPEC.md
+└── specs/
+    ├── SPEC-TB-001-feature-a.md  # Ultra-detailed implementation tasks
+    ├── SPEC-TB-002-feature-b.md
+    ├── SPEC-ND-001-feature-c.md
     └── ...
+
+.artefacts/                        # ⭐ NEW IN V2 - Expert artifacts
+├── feature-a/
+│   ├── PRD.md                     # Product requirements (from PM expert)
+│   ├── ARCHITECTURE.md            # Architecture design (from Arch expert)
+│   ├── UI-SPEC.md                 # UI specification (from UI expert)
+│   ├── PROMPT.md                  # Ralph loop prompt
+│   ├── progress.txt               # Implementation progress tracking (Ralph loop)
+│   ├── TESTING.md                 # Testing guide (created during implementation)
+│   └── CHANGELOG.md               # Change summary (created during implementation)
+├── feature-b/
+│   ├── PRD.md
+│   ├── ARCHITECTURE.md
+│   ├── UI-SPEC.md
+│   ├── PROMPT.md
+│   └── progress.txt
+└── ...
 ```
 
 ---
@@ -69,7 +76,7 @@ These artifacts are stored in `.prodman/artifacts/` and provide deep context for
 
 **Example path:**
 ```
-.prodman/artifacts/EP-TB-003-user-auth/PRD.md
+.artefacts/user-auth/PRD.md
 ```
 
 ---
@@ -98,7 +105,7 @@ These artifacts are stored in `.prodman/artifacts/` and provide deep context for
 
 **Example path:**
 ```
-.prodman/artifacts/EP-TB-003-user-auth/ARCHITECTURE.md
+.artefacts/user-auth/ARCHITECTURE.md
 ```
 
 ---
@@ -127,7 +134,7 @@ These artifacts are stored in `.prodman/artifacts/` and provide deep context for
 
 **Example path:**
 ```
-.prodman/artifacts/EP-TB-003-user-auth/UI-SPEC.md
+.artefacts/user-auth/UI-SPEC.md
 ```
 
 ---
@@ -176,9 +183,9 @@ Ralph loop **references** artifacts when tasks need clarification.
 **Ralph loop prompt includes:**
 ```
 EXPERT ARTIFACTS (reference during implementation):
-- PRD: /path/to/.prodman/artifacts/EP-TB-003-user-auth/PRD.md
-- Architecture: /path/to/.prodman/artifacts/EP-TB-003-user-auth/ARCHITECTURE.md
-- UI Spec: /path/to/.prodman/artifacts/EP-TB-003-user-auth/UI-SPEC.md
+- PRD: /path/to/.artefacts/user-auth/PRD.md
+- Architecture: /path/to/.artefacts/user-auth/ARCHITECTURE.md
+- UI Spec: /path/to/.artefacts/user-auth/UI-SPEC.md
 
 Consult them when you need clarification on WHY or HOW something should be implemented.
 ```
@@ -219,9 +226,10 @@ Reviewers **validate** implementation against all 3 artifacts.
 
 ### Storage
 
-- Artifacts stored in: `.prodman/artifacts/EP-{CONTRIBUTOR}-{NUMBER}-{slug}/`
-- Naming convention: `EP-TB-003-user-auth/` (matches epic/spec naming)
-- Files: `PRD.md`, `ARCHITECTURE.md`, `UI-SPEC.md`
+- Artifacts stored in: `.artefacts/{feature-slug}/`
+- Naming convention: `{feature-slug}/` (e.g., `user-auth/`, `data-export/`)
+- Planning files (created by ralph-planner): `PRD.md`, `ARCHITECTURE.md`, `UI-SPEC.md`, `PROMPT.md`
+- Implementation files (created by Ralph loop): `progress.txt`, `TESTING.md`, `CHANGELOG.md`
 
 ### Usage
 
@@ -295,13 +303,13 @@ Reviewers validate against comprehensive requirements:
 ### Step 3: Spawn Subagents
 ```
 🤖 Spawning Product Manager expert...
-   ✓ PRD created: .prodman/artifacts/EP-TB-003-user-auth/PRD.md
+   ✓ PRD created: .artefacts/user-auth/PRD.md
 
 🤖 Spawning Architecture expert...
-   ✓ Architecture created: .prodman/artifacts/EP-TB-003-user-auth/ARCHITECTURE.md
+   ✓ Architecture created: .artefacts/user-auth/ARCHITECTURE.md
 
 🤖 Spawning UI/UX expert...
-   ✓ UI spec created: .prodman/artifacts/EP-TB-003-user-auth/UI-SPEC.md
+   ✓ UI spec created: .artefacts/user-auth/UI-SPEC.md
 ```
 
 ### Step 4: Assemble Artifacts
@@ -342,7 +350,7 @@ Prompt includes paths to artifacts for reference.
 ### Identifying Version
 
 - **V1 epic**: No artifacts directory, simpler spec tasks
-- **V2 epic**: Has `.prodman/artifacts/EP-{ID}-{NUM}-{slug}/` with 3 files
+- **V2 epic**: Has `.artefacts/{feature-slug}/` with PRD, ARCHITECTURE, UI-SPEC, and PROMPT files
 
 ### Gradual Adoption
 

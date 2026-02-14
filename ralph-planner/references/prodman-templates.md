@@ -66,7 +66,7 @@ Example: `.prodman/specs/SPEC-TB-003-user-auth.md`
 ```markdown
 # {Feature Name} Implementation Plan
 
-> **For the Ralph loop:** Follow this plan task-by-task. Track progress in `progress.txt`.
+> **For the Ralph loop:** Follow this plan task-by-task. Track progress in `.artefacts/{feature-slug}/progress.txt`.
 
 **Epic:** EP-{CONTRIBUTOR}-{NUMBER}
 **Goal:** {One sentence from PRD}
@@ -166,7 +166,7 @@ Tests should be:
 
 **General:**
 - [ ] All tasks implemented per spec
-- [ ] `progress.txt` shows all tasks complete
+- [ ] `.artefacts/{feature-slug}/progress.txt` shows all tasks complete
 - [ ] `.artefacts/{feature-slug}/TESTING.md` created
 - [ ] `.artefacts/{feature-slug}/CHANGELOG.md` created
 ```
