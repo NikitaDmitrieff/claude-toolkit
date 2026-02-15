@@ -211,10 +211,9 @@ Ralph-planner will ask which contributor and use the appropriate counter.
 
 - **SKILL.md** - Complete workflow steps
 - **SKILL_NOTES.md** - Implementation notes and changes
-- **references/prodman-templates.md** - Epic and spec formats
+- **references/prodman-spec-format.md** - Epic, spec, and artifact formats
 - **references/prompt-template.md** - Ralph loop command structure
-- **references/artifacts-structure.md** - Deep dive on artifacts
-- **subagents/** - Expert agent prompts (reference only)
+- **subagents/** - Base expert prompt + domain-specific expert files
 
 ---
 
@@ -321,13 +320,16 @@ See `.research/TEST_VALIDATION.md` for detailed test results.
 
 ### Understanding the Agents
 
-- **Product Manager Prompt** - `subagents/product-manager-prompt.md`
+- **Base Expert Prompt** - `subagents/_base-expert-prompt.md`
+  Learn: Shared depth calibration, workflow integration, best practices
+
+- **Product Manager** - `subagents/product-manager.md`
   Learn: RICE prioritization, user stories, acceptance criteria
 
-- **Architecture Expert Prompt** - `subagents/architecture-expert-prompt.md`
+- **Architecture Expert** - `subagents/architecture.md`
   Learn: ADRs, C4 model, NFR coverage, API design
 
-- **UI/UX Expert Prompt** - `subagents/ui-ux-expert-prompt.md`
+- **UI/UX Expert** - `subagents/ui-ux.md`
   Learn: Design tokens, WCAG 2.1 AA, responsive design
 
 ### Research Documents
@@ -376,7 +378,7 @@ Part of claude-toolkit. Same license applies.
 **Questions?** Check:
 1. This README
 2. `SKILL.md` (detailed workflow)
-3. `references/artifacts-structure.md` (deep dive)
+3. `references/prodman-spec-format.md` (formats reference)
 4. `.research/TEST_VALIDATION.md` (examples)
 
 **Issues?** File in claude-toolkit repo.

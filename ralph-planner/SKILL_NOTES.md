@@ -59,10 +59,13 @@ Each task assembles information from:
 - **UI-SPEC**: Design tokens, component states, accessibility, responsive behavior
 
 ### Prompt System
-Subagent prompts stored in:
-- `ralph-planner/subagents/product-manager-prompt.md`
-- `ralph-planner/subagents/architecture-expert-prompt.md`
-- `ralph-planner/subagents/ui-ux-expert-prompt.md`
+Subagent prompts use composition pattern:
+- `ralph-planner/subagents/_base-expert-prompt.md` (shared base)
+- `ralph-planner/subagents/product-manager.md` (PM specifics)
+- `ralph-planner/subagents/architecture.md` (architecture specifics)
+- `ralph-planner/subagents/ui-ux.md` (UI/UX specifics)
+
+At runtime: base + expert-specific = full prompt (placeholders replaced).
 
 ## Benefits
 
