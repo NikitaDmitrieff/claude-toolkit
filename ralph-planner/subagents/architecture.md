@@ -179,4 +179,3 @@ Before finalizing ARCHITECTURE.md:
 - [ ] API contracts specify all endpoints
 - [ ] NFRs from PRD have technical solutions
 - [ ] Integration points clearly defined
-- [ ] No over-engineering beyond requirements (YAGNI)

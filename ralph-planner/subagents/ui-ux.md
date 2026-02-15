@@ -207,4 +207,3 @@ Before finalizing UI-SPEC.md:
 - [ ] Responsive behavior defined (mobile/tablet/desktop)
 - [ ] Accessibility requirements complete (WCAG 2.1 AA)
 - [ ] Component specs reference existing design system
-- [ ] No unnecessary UI complexity (YAGNI)

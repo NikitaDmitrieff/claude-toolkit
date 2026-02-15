@@ -86,161 +86,65 @@ Once you have the design document and contributor info, conditionally spawn expe
 
 **Actions - Conditionally spawn agents based on levels:**
 
-Each agent section below should only execute if its level > 0.
+Each agent section below should only execute if its level > 0. Skip disabled agents (level 0).
+
+**Prompt construction (same for all experts):**
+1. Read `ralph-planner/subagents/_base-expert-prompt.md`
+2. Read `ralph-planner/subagents/{expert}.md`
+3. Compose: base (with placeholders replaced) + expert-specific content
+4. Replace placeholders: `{ROLE}`, `{DOMAIN}`, `{OUTPUT_ARTIFACT}`, `{LEVEL}`
+5. Pass composed prompt to Task tool with `subagent_type: "general-purpose"`
+
+For each enabled agent, inform user when spawning and when artifact is created.
+
+**Execution order:** Sequential (PM → Arch → UI/UX) so each expert builds on previous work.
+
+---
 
 #### Subagent 1: Product Manager Expert (if pmLevel > 0)
 
-**Check:** If `pmLevel == 0`, skip this agent entirely and proceed to Architecture Expert.
+| Placeholder | Value |
+|-------------|-------|
+| `{ROLE}` | Product Manager |
+| `{DOMAIN}` | product requirements |
+| `{OUTPUT_ARTIFACT}` | PRD.md |
+| `{LEVEL}` | pmLevel |
 
-**If pmLevel >= 1, spawn with Task tool:**
-
-- `subagent_type`: "general-purpose"
-- `description`: "Create PRD for {feature name} at depth {pmLevel}/5"
-- `prompt`: Construct prompt as follows:
-
-**Prompt construction:**
-1. Read `ralph-planner/subagents/_base-expert-prompt.md`
-2. Read `ralph-planner/subagents/product-manager.md`
-3. Compose full prompt: base (with placeholders replaced) + expert-specific content
-4. Replace placeholders in base prompt:
-   - `{ROLE}` → "Product Manager"
-   - `{DOMAIN}` → "product requirements"
-   - `{OUTPUT_ARTIFACT}` → "PRD.md"
-   - `{LEVEL}` → actual pmLevel value
-5. Pass composed prompt to Task tool
-
-**Input to provide in the prompt:**
-- The design.md content
-- Epic ID (e.g., `EP-TB-003`)
-- Depth level: {pmLevel}/5
-- Project context (tech stack, existing features)
-
-**Expected output:**
-- `PRD.md` saved to `.artefacts/{feature-slug}/PRD.md`
-- Contains: problem statement, success metrics, user stories, acceptance criteria, scope, NFRs
-- Detail level scales with pmLevel (1-2 = concise, 3 = standard, 4-5 = comprehensive)
-
-**Inform user:**
-```
-🤖 Spawning Product Manager expert (depth {pmLevel}/5)...
-```
-
-**After completion:**
-```
-✓ PRD created at .artefacts/{feature-slug}/PRD.md
-```
-
-**Update available artifacts:** `[design.md, PRD.md]`
+**Input:** design.md, Epic ID, project context (tech stack, existing features)
+**Output:** `.artefacts/{feature-slug}/PRD.md` — problem statement, success metrics, user stories, acceptance criteria, scope, NFRs
 
 ---
 
 #### Subagent 2: Architecture Expert (if archLevel > 0)
 
-**Check:** If `archLevel == 0`, skip this agent entirely and proceed to UI/UX Expert.
+| Placeholder | Value |
+|-------------|-------|
+| `{ROLE}` | Architecture Expert |
+| `{DOMAIN}` | system architecture |
+| `{OUTPUT_ARTIFACT}` | ARCHITECTURE.md |
+| `{LEVEL}` | archLevel |
 
-**If archLevel >= 1, spawn with Task tool:**
-
-- `subagent_type`: "general-purpose"
-- `description`: "Create architecture doc for {feature name} at depth {archLevel}/5"
-- `prompt`: Construct prompt as follows:
-
-**Prompt construction:**
-1. Read `ralph-planner/subagents/_base-expert-prompt.md`
-2. Read `ralph-planner/subagents/architecture.md`
-3. Compose full prompt: base (with placeholders replaced) + expert-specific content
-4. Replace placeholders in base prompt:
-   - `{ROLE}` → "Architecture Expert"
-   - `{DOMAIN}` → "system architecture"
-   - `{OUTPUT_ARTIFACT}` → "ARCHITECTURE.md"
-   - `{LEVEL}` → actual archLevel value
-5. Pass composed prompt to Task tool
-
-**Input to provide in the prompt:**
-- The design.md content
-- The PRD.md from Product Manager **if it exists** (check if pmLevel > 0)
-  - If PRD exists: include it in context
-  - If PRD doesn't exist: note "⚠️ No PRD available. Extract product requirements from design.md directly."
-- Epic ID
-- Depth level: {archLevel}/5
-- Project context (existing architecture, tech stack, database schema)
-
-**Expected output:**
-- `ARCHITECTURE.md` saved to `.artefacts/{feature-slug}/ARCHITECTURE.md`
-- Contains: ADRs, C4 diagrams, database schema, API specs, NFR coverage, implementation guidance
-- Detail level scales with archLevel (1-2 = core only, 3 = standard, 4-5 = comprehensive)
-
-**Inform user:**
-```
-🤖 Spawning Architecture expert (depth {archLevel}/5)...
-{if PRD available: '   Using PRD as input'}
-{if no PRD: '   ⚠️ No PRD available, using design.md only'}
-```
-
-**After completion:**
-```
-✓ Architecture document created at .artefacts/{feature-slug}/ARCHITECTURE.md
-```
-
-**Update available artifacts:** `[design.md, {PRD.md if exists}, ARCHITECTURE.md]`
+**Input:** design.md, PRD.md (if available, else note "No PRD available"), Epic ID, project context (architecture, tech stack, database)
+**Output:** `.artefacts/{feature-slug}/ARCHITECTURE.md` — ADRs, C4 diagrams, database schema, API specs, NFR coverage
 
 ---
 
 #### Subagent 3: UI/UX Expert (if uiuxLevel > 0)
 
-**Check:** If `uiuxLevel == 0`, skip this agent entirely and proceed to STEP 3.
+| Placeholder | Value |
+|-------------|-------|
+| `{ROLE}` | UI/UX Expert |
+| `{DOMAIN}` | user interface design |
+| `{OUTPUT_ARTIFACT}` | UI-SPEC.md |
+| `{LEVEL}` | uiuxLevel |
 
-**If uiuxLevel >= 1, spawn with Task tool:**
-
-- `subagent_type`: "general-purpose"
-- `description`: "Create UI specification for {feature name} at depth {uiuxLevel}/5"
-- `prompt`: Construct prompt as follows:
-
-**Prompt construction:**
-1. Read `ralph-planner/subagents/_base-expert-prompt.md`
-2. Read `ralph-planner/subagents/ui-ux.md`
-3. Compose full prompt: base (with placeholders replaced) + expert-specific content
-4. Replace placeholders in base prompt:
-   - `{ROLE}` → "UI/UX Expert"
-   - `{DOMAIN}` → "user interface design"
-   - `{OUTPUT_ARTIFACT}` → "UI-SPEC.md"
-   - `{LEVEL}` → actual uiuxLevel value
-5. Pass composed prompt to Task tool
-
-**Input to provide in the prompt:**
-- The design.md content
-- The PRD.md from Product Manager **if it exists** (check if pmLevel > 0)
-- The ARCHITECTURE.md from Architecture Expert **if it exists** (check if archLevel > 0)
-- Epic ID
-- Depth level: {uiuxLevel}/5
-- Project context (existing design system, UI framework)
-
-**Context notes to include:**
-- If both PRD and ARCHITECTURE exist: "You have full context from PM and Architecture experts."
-- If only PRD exists: "⚠️ No architecture doc available. Infer technical constraints from design.md."
-- If only ARCHITECTURE exists: "⚠️ No PRD available. Extract user requirements from design.md."
-- If neither exists: "⚠️ No PRD or Architecture docs. Use design.md as sole source."
-
-**Expected output:**
-- `UI-SPEC.md` saved to `.artefacts/{feature-slug}/UI-SPEC.md`
-- Contains: design tokens, component library, accessibility requirements, responsive design, interaction flows
-- Detail level scales with uiuxLevel (1-2 = essentials, 3 = standard, 4-5 = comprehensive)
-
-**Inform user:**
-```
-🤖 Spawning UI/UX expert (depth {uiuxLevel}/5)...
-{list which docs are available as input}
-```
-
-**After completion:**
-```
-✓ UI specification created at .artefacts/{feature-slug}/UI-SPEC.md
-```
-
-**Update available artifacts:** `[design.md, {PRD.md if exists}, {ARCHITECTURE.md if exists}, UI-SPEC.md]`
+**Input:** design.md, PRD.md (if available), ARCHITECTURE.md (if available), Epic ID, project context (design system, UI framework)
+**Context notes:** Inform the agent which upstream artifacts are available/missing so it can adapt.
+**Output:** `.artefacts/{feature-slug}/UI-SPEC.md` — design tokens, component library, accessibility, responsive design, interaction flows
 
 ---
 
-**Execution Strategy:** Sequential (PM → Arch → UI/UX) so each expert builds on previous work. Agents handle missing inputs gracefully (fall back to design.md). Inform user of progress as each agent starts/completes.
+**Track available artifacts** as each agent completes: `[design.md, {PRD.md}, {ARCHITECTURE.md}, {UI-SPEC.md}]`
 
 **After all enabled subagents complete, continue to STEP 3.**
 

@@ -113,5 +113,4 @@ Before finalizing PRD:
 - [ ] Success metrics are measurable and time-bound
 - [ ] Scope boundaries are explicit (IN vs OUT)
 - [ ] NFRs include performance, security, accessibility
-- [ ] No features beyond design.md scope (YAGNI)
 - [ ] MoSCoW prioritization applied (depth 3+)

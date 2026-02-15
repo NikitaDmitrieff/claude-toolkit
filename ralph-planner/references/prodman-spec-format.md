@@ -270,13 +270,4 @@ UserService API contract in services/user.ts. Data flow: API → Cache → State
 
 ---
 
-## Artifact Descriptions
-
-| Artifact | Created By | Purpose | Contains |
-|----------|-----------|---------|----------|
-| PRD.md | PM Expert | WHAT and WHY | Problem statement, success metrics, user stories, acceptance criteria, scope, NFRs |
-| ARCHITECTURE.md | Arch Expert | HOW (technical) | ADRs, C4 diagrams, database schema, API specs, NFR coverage, file structure |
-| UI-SPEC.md | UI/UX Expert | HOW (interface) | Design tokens, component library, accessibility, responsive design, interaction flows |
-| PROMPT.md | Ralph-planner | Loop execution | Complete prompt for ralph.sh to execute |
-
 **Lifecycle:** Artifacts are immutable planning snapshots. If requirements change, create a new epic with new artifacts.
